@@ -4,7 +4,7 @@ This repository contains useful and re-usable expression snippets and functions,
 
 ## How to use the library
 
-Each file is a class or a function which can be used in expressions, and all are documented in the source code, using jsdoc syntax. The comprehensive documentation of these expressions is also available at [duaef-expressions.rainboxlab.org](http://duaef-expressions.rainboxlab.org)
+**Each file in the root folder is a class or a function which can be used in expressions**, and all are documented in the source code, using jsdoc syntax. The comprehensive documentation of these expressions is also available at [duaef-expressions.rainboxlab.org](http://duaef-expressions.rainboxlab.org)
 
 Some functions depends on other ones. This is advertised with the `@requires` tag in the documentation header in each file.
 
@@ -14,26 +14,27 @@ There are several ways to use this library in your expressions.
 
 If you only need a specfic function, you can just copy it from the corresponding file into your expression. But be careful to also copy its dependencies (if any) which are listed with the `@requires` tag in the documentation header of the file.
 
-An easier way to use the library is to include all of it in your expressions. Don't worry, it will not be heavy. Including a bunch of functions is not a problem in termes of performance, it's when actually using them that you may have to be careful. This way, you won't have to worry about dependencies.
+An easier way to use the library is to include all of it in your expressions. Don't worry, it will not be heavy. Including a bunch of functions is not a problem in terms of performance, it's when actually using them that you may have to be careful. This way, you won't have to worry about dependencies.
 
 There are two ways to include the whole library in your expressions:
 
-- Copy the content of build/DuExpression.js at the beginning of your expression.  
+- **Copy the content of [build/DuExpression.js](https://github.com/Rainbox-dev/DuAEF_ExpressionLib/blob/master/build/DuExpressio.js) at the beginning of your expression**.  
 This is the easy way, but it is going to take a lot of place at the beginning of the expression and may be a bit scary.  
 You'll also need to copy it in all the expressions where you need to use the library.
 
-- Or you can copy the contents of build/DuExpression_sourceText.js in the expression of the sourceText property of a Text Layer and eval this text in your expressions.  
+- **Or you can copy the contents of [build/DuExpression_sourceText.js](https://github.com/Rainbox-dev/DuAEF_ExpressionLib/blob/master/build/DuExpressionn_sourceText.js) in the expression of the sourceText property of a Text Layer and eval this text in your expressions**.  
   1. Add a Text Layer in the composition, rename it to "ExpressionLib" for example.
-  2. Copy the content of build/DuExpression_sourceText.js in the expression of the sourceText property.
-  3. In the beginning of your expression, add this line: `eval(thisComp.layer("ExpressionLib").text.sourceText;`.
-  The library is now available in your expression. This way it is not directly included in it and it is easier to use it in several expressions at once.  
-  You can also copy and paste the "ExpressionLib" text layer in other compositions.
+  2. Copy the content of [build/DuExpression_sourceText.js](https://github.com/Rainbox-dev/DuAEF_ExpressionLib/blob/master/build/DuExpressionn_sourceText.js) in the expression of the sourceText property.
+  3. In the beginning of your expression, add this line: `eval(thisComp.layer("ExpressionLib").text.sourceText);`.
+
+The library is now available in your expression. With the second method it is not directly included in it and it is easier to use it in several expressions at once.  
+You can also copy and paste the "ExpressionLib" text layer in other compositions.
 
 ### To generate expressions via scripting
 
-If you're using DuAEF, each function is available in the `DuAEF.DuExpression.Library` namespace; each object is the string representation of the corresponding expression.
+If you're using [DuAEF](https://github.com/Rainbox-dev/DuAEF), each function is available in the `DuAEF.DuExpression.Library` namespace; each object is the string representation of the corresponding expression. They're all listed and documented in the [DuAEF Reference](http://duaef-reference.rainboxlab.org).
 
-If you're not using the complete DuAEF, just include the file `build/DuExpression_scripting.jsxinc` in your script with `#include DuExpression_scripting.jsxinc` to make the `DuAEF.DuExpression.Library` namespace available. Then, each object in the namespace correponds to the string representation of each expression.
+If you're not using the complete DuAEF, just include the [`build/DuExpression_scripting.jsxinc` file](https://github.com/Rainbox-dev/DuAEF_ExpressionLib/blob/master/build/DuExpression_scripting.jsxinc) in your script with `#include DuExpression_scripting.jsxinc` to make the `DuAEF.DuExpression.Library` namespace available. Then, each object in the namespace correponds to the string representation of each expression.
 
 Example:
 
