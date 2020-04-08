@@ -25,7 +25,10 @@ You'll also need to copy it in all the expressions where you need to use the lib
 - **Or you can copy the contents of [build/DuExpression_sourceText.js](https://github.com/Rainbox-dev/DuAEF_ExpressionLib/blob/master/build/DuExpressionn_sourceText.js) in the expression of the sourceText property of a Text Layer and eval this text in your expressions**.  
   1. Add a Text Layer in the composition, rename it to "ExpressionLib" for example.
   2. Copy the content of [build/DuExpression_sourceText.js](https://github.com/Rainbox-dev/DuAEF_ExpressionLib/blob/master/build/DuExpressionn_sourceText.js) in the expression of the sourceText property.
-  3. In the beginning of your expression, add this line: `eval(thisComp.layer("ExpressionLib").text.sourceText);`.
+  3. In the beginning of your expression, add this line: `eval(thisComp.layer("ExpressionLib").text.sourceText.value);`.
+  4. Example:
+    eval(thisComp.layer("eLib").text.sourceText.value);
+    interpolationBezier( time, 2, 8, 0, 180);
 
 The library is now available in your expression. With the second method it is not directly included in it and it is easier to use it in several expressions at once.  
 You can also copy and paste the "ExpressionLib" text layer in other compositions.
