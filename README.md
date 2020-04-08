@@ -32,7 +32,7 @@ You can also copy and paste the "ExpressionLib" text layer in other compositions
 
 ### To generate expressions via scripting
 
-If you're using [DuAEF](https://github.com/Rainbox-dev/DuAEF), each function is available in the `DuAEF.DuExpression.Library` namespace; each object is the string representation of the corresponding expression. They're all listed and documented in the [DuAEF Reference](http://duaef-reference.rainboxlab.org).
+If you're using [DuAEF](https://github.com/Rainbox-dev/DuAEF), each function is available in the `DuAEF.DuExpression.Library` namespace; each object is the string representation of the corresponding expression. They're all listed and documented in the [DuAEF Reference](https://duaef-reference.rainboxlab.org/DuAEF.DuExpression.Library.html).
 
 If you're not using the complete DuAEF, just include the [`build/DuExpression_scripting.jsxinc` file](https://github.com/Rainbox-dev/DuAEF_ExpressionLib/blob/master/build/DuExpression_scripting.jsxinc) in your script with `#include DuExpression_scripting.jsxinc` to make the `DuAEF.DuExpression.Library` namespace available. Then, each object in the namespace correponds to the string representation of each expression.
 
