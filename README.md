@@ -42,7 +42,7 @@ Example:
     myExpression += '\ncheckEffect( thisLayer.effect(1), 1, "Blur" );
 
 > Note that due to the [licence of DuAEF](https://github.com/Rainbox-dev/DuAEF/blob/master/LICENSE.md), if you use DuAEF in your own script, your script has to be free and open source, released under a license compatible with the [GNU General Public Licence](https://github.com/Rainbox-dev/DuAEF/blob/master/LICENSE.md). **This is mandatory**.  
-But we tolerate the use of this expression library in any script or expression, as long as you don't include the full DuAEF framework (the library itself is licensed under the LGPLv3 license).
+But we tolerate the use of this expression library in any script or expression, as long as you don't include the full DuAEF framework (the library itself is licensed under the [LGPLv3 license](https://github.com/Rainbox-dev/DuAEF_ExpressionLib/blob/master/LICENSE).
 
 ## Contribution guidelines
 
