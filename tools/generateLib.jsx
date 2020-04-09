@@ -1,7 +1,8 @@
 (function(){
 
     var thisScriptFile = new File($.fileName);
-    var expressionsFolder = thisScriptFile.parent.parent;
+    var repoFolder = thisScriptFile.parent.parent;
+    var expressionFolder = new Folder(repoFolder.absoluteURI + '/src');
 
     //A regex to separate documentation from actual js code
     var reDoc = /(\/\*\*(?:\s|\S)*?\*\/)([\s\S]*)/m;
@@ -36,25 +37,43 @@
         return expString;
     }
 
-    //list all files
+    //list all files and get content
     var expressions = [];
-    var expressionFiles = expressionsFolder.getFiles('*.js');
-    for (var i = 0, num = expressionFiles.length; i < num; i++)
-    {
-        var file = expressionFiles[i];
-        var expression = {};
-        expression.name = file.name.substring(0, file.name.length - 3);
-        file.open('r');
-        var fileContent = file.read();
-        var match = fileContent.match(reDoc);
-        expression.doc = match[1];
-        expression.expressionWithDoc = match[2];
-        expression.original = fileContent;
-        expression.expression = match[2].replace( reRemoveDoc , '').replace(reRemoveComment, '').replace( reRemoveSpaces, '').replace( reRemoveEmpty, '');
-        file.close();
-        expressions.push(expression);
+
+    function filter( f ) {
+        if (f instanceof Folder) return true;
+        var name = f.name.split('.');
+        var ext = name[name.length-1];
+        if (ext == "js") return true;
     }
 
+    function getExpresssions( folder )
+    {
+        var expressionFiles = folder.getFiles(filter);
+        for (var i = 0, num = expressionFiles.length; i < num; i++)
+        {
+            var file = expressionFiles[i];
+            if (file instanceof Folder)
+            {
+                getExpresssions( file );
+                continue;
+            } 
+            var expression = {};
+            expression.name = file.name.substring(0, file.name.length - 3);
+            file.open('r');
+            var fileContent = file.read();
+            var match = fileContent.match(reDoc);
+            expression.doc = match[1];
+            expression.expressionWithDoc = match[2];
+            expression.original = fileContent;
+            expression.expression = match[2].replace( reRemoveDoc , '').replace(reRemoveComment, '').replace( reRemoveSpaces, '');//.replace( reRemoveEmpty, '');
+            file.close();
+            expressions.push(expression);
+        }
+    }
+
+    getExpresssions(expressionFolder);   
+    
     //create content
     var jsContent = '';
     var jsFUllContent = '';
@@ -80,10 +99,10 @@
     }
 
     //write
-    var jsxinc = new File(expressionsFolder.absoluteURI + "/build/DuExpression_scripting.jsxinc");
-    var js = new File(expressionsFolder.absoluteURI + "/build/DuExpression.js");
-    var jsFull = new File(expressionsFolder.absoluteURI + "/build/DuExpression_full.js");
-    var text = new File(expressionsFolder.absoluteURI + "/build/DuExpression_sourceText.js");
+    var jsxinc = new File(repoFolder.absoluteURI + "/build/DuExpression_scripting.jsxinc");
+    var js = new File(repoFolder.absoluteURI + "/build/DuExpression.js");
+    var jsFull = new File(repoFolder.absoluteURI + "/build/DuExpression_full.js");
+    var text = new File(repoFolder.absoluteURI + "/build/DuExpression_sourceText.js");
     if (jsxinc.open('w'))
     {
         jsxinc.write(jsxincContent);

@@ -10,7 +10,7 @@
  * @param {number} [rate=0] The raising speed in the range [-1.0, 1.0].
  * @return {number} the value.
  */
-function interpolationGaussian( t, tMin, tMax, value1, value2, rate )
+function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )
 {
     if (typeof value2 === "undefined") value2 = 1;
     if (typeof value1 === "undefined") value1 = 0;

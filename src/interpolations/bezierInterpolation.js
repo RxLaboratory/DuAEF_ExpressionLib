@@ -11,7 +11,7 @@
  * [ outTangentX, outTangentY, inTangentX, inTangentY ]
  * @return {number} the value.
  */
-function interpolationBezier(t, tMin, tMax, value1, value2, bezierPoints) {
+function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {
     if (arguments.length !== 5) return value;
     var a = value2 - value1;
     var b = tMax - tMin;

@@ -7,14 +7,13 @@
 /**
   * 2D transformation matrix object initialized with identity matrix. See the source code for more documentation.
   * @class
+  * @classdesc 2D Transformation Matrix. Simplified for use in After Effects Expressions by Nicolas "Duduf" Dufresne
   * @prop {number} a - scale x
   * @prop {number} b - shear y
   * @prop {number} c - shear x
   * @prop {number} d - scale y
   * @prop {number} e - translate x
   * @prop {number} f - translate y
-  * @constructor
-  * @overview 2D Transformation Matrix. Simplified for use in After Effects Expressions by Nicolas "Duduf" Dufresne
   * @author Epistemex
   * @version 2.7.5
   * @license MIT license (header required)

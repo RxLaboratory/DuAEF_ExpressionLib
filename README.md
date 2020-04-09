@@ -4,7 +4,7 @@ This repository contains useful and re-usable expression snippets and functions,
 
 ## How to use the library
 
-**Each file in the root folder is a class or a function which can be used in expressions**, and all are documented in the source code, using jsdoc syntax. The comprehensive documentation of these expressions is also available at [duaef-expressions.rainboxlab.org](http://duaef-expressions.rainboxlab.org)
+**Each file in the [src](https://github.com/Rainbox-dev/DuAEF_ExpressionLib/blob/master/src/) folder is a class or a function which can be used in expressions**, and all are documented in the source code, using jsdoc syntax. The comprehensive documentation of these expressions is also available at [duaef-expressions.rainboxlab.org](http://duaef-expressions.rainboxlab.org)
 
 Some functions depends on other ones. This is advertised with the `@requires` tag in the documentation header in each file.
 
@@ -12,7 +12,7 @@ Some functions depends on other ones. This is advertised with the `@requires` ta
 
 There are several ways to use this library in your expressions.
 
-If you only need a specfic function, you can just copy it from the corresponding file into your expression. But be careful to also copy its dependencies (if any) which are listed with the `@requires` tag in the documentation header of the file.
+If you only need a specfic function, you can just copy it from the corresponding file from the [src](https://github.com/Rainbox-dev/DuAEF_ExpressionLib/blob/master/src/) folder into your expression. But be careful to also copy its dependencies (if any) which are listed with the `@requires` tag in the documentation header of the file.
 
 An easier way to use the library is to include all of it in your expressions. Don't worry, it will not be heavy. Including a bunch of functions is not a problem in terms of performance, it's when actually using them that you may have to be careful. This way, you won't have to worry about dependencies.
 

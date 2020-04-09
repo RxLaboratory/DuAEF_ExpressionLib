@@ -9,14 +9,16 @@
             "request": "launch",
             "name": "Ask for script name",
             "program": "${workspaceFolder}/${command:AskForScriptName}",
-            "stopOnEntry": false
+            "stopOnEntry": false,
+            "extensionMode":"passive"
         },
         {
             "type": "extendscript-debug",
             "request": "launch",
             "name": "Generate Lib",
             "program": "${workspaceFolder}/tools/generateLib.jsx",
-            "stopOnEntry": false
+            "stopOnEntry": false,
+            "extensionMode":"passive"
         }
     ]
 }
