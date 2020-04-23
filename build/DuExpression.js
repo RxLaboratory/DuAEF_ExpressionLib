@@ -622,9 +622,29 @@ if (typeof l === "undefined") l = thisLayer;
 var r = l.rotation.value;
 while ( l.hasParent ) {
 l = l.parent;
-r -= l.rotation.value;
+var s = l.scale.value;
+r -= l.rotation.value * Math.sign(s[0]*s[1]);
 }
 return r;
+}
+function dishineritScale( l ) {
+if (typeof l === "undefined") l = thisLayer;
+var s = l.scale.value;
+var threeD = s.length == 3;
+while ( l.hasParent ) {
+l = l.parent;
+var ps = l.scale.value / 100;
+if (threeD && ps.length == 3) {
+s = [ s[0]/ps[0], s[1]/ps[1], s[2]/ps[2] ];
+}
+else if (threeD) {
+s = [ s[0]/ps[0], s[1]/ps[1], s[2] ];
+}
+else {
+s = [ s[0]/ps[0], s[1]/ps[1] ];
+}
+}
+return s;
 }
 function fromGroupToLayer( point ) {
 var matrix = getGroupTransformMatrix();
@@ -684,13 +704,40 @@ if (typeof t === "undefined") t = time;
 return (getWorldPos(t, l) - getWorldPos(t - 0.01, l)) * 100;
 }
 function getOrientation( l ) {
-var r = 0;
-r += l.rotation.value;
+var sign = getScaleMirror( l );
+var uTurn = getScaleUTurn( l )
+var r = l.rotation.value * sign + uTurn;
 while ( l.hasParent ) {
 l = l.parent;
-r += l.rotation.value;
+var lr = l.rotation.value;
+if (l.hasParent) {
+var s = l.parent.scale.value;
+lr *= Math.sign(s[0]*s[1]);
+}
+r += lr;
 }
 return r;
+}
+function getScaleMirror( l ) {
+if (typeof l === "undefined") l = thisLayer;
+var sign = 1;
+while (l.hasParent) {
+l = l.parent;
+var s = l.scale.value;
+sign *= Math.sign(s[0]*s[1]);
+}
+return sign;
+}
+function getScaleUTurn( l ) {
+if (typeof l === "undefined") l = thisLayer;
+var u = 1;
+while (l.hasParent) {
+l = l.parent;
+var s = l.scale.value;
+u = u*s[1];
+}
+if (u < 0) return 180;
+else return 0;
 }
 function getOrientationAtTime( l, t ) {
 if (typeof t === "undefined" ) t = time;
@@ -714,6 +761,24 @@ return thisLayer.toWorld(prop.valueAtTime(t), t);
 function getPropWorldVelocity(t, prop) {
 if (typeof t === "undefined") t = time;
 return (getPropWorldValue(t + 0.005, prop) - getPropWorldValue(t - 0.005, prop)) * 100;
+}
+function getScale( l ) {
+var s = l.scale.value;
+var threeD = s.length == 3;
+while ( l.hasParent ) {
+l = l.parent;
+var ps = l.scale.value / 100;
+if (threeD && ps.length == 3) {
+s = [ s[0]*ps[0], s[1]*ps[1], s[2]*ps[2] ];
+}
+else if (threeD) {
+s = [ s[0]*ps[0], s[1]*ps[1], s[2] ];
+}
+else {
+s = [ s[0]*ps[0], s[1]*ps[1] ];
+}
+}
+return s;
 }
 function Matrix() {
 /*!

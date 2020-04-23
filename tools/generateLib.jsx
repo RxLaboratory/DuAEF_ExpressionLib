@@ -93,7 +93,7 @@
     {
         var exp = expressions[i];
         jsxincContent += exp.doc + '\n';
-        jsxincContent += 'DuAEF.DuExpression.Library.' + exp.name + " = " + scriptifyExpression(exp.expression) + '\n\n';
+        jsxincContent += 'DuAEF.DuExpression.Library.' + exp.name + " = " + scriptifyExpression(exp.expression, false) + '\n\n';
         jsFullContent += exp.original + '\n\n';
         jsContent += exp.expression + '\n';
     }

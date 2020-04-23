@@ -19,7 +19,8 @@ function dishineritRotation( l ) {
     var r = l.rotation.value;
     while ( l.hasParent ) {
         l = l.parent;
-        r -= l.rotation.value;
+        var s = l.scale.value;
+        r -= l.rotation.value * Math.sign(s[0]*s[1]);
     }
     return r;
 }

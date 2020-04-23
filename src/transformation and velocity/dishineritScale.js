@@ -16,7 +16,7 @@
  */
 function dishineritScale( l ) {
     if (typeof l === "undefined") l = thisLayer;
-    var r = l.scale.value;
+    var s = l.scale.value;
     var threeD = s.length == 3;
     while ( l.hasParent ) {
         l = l.parent;
@@ -31,5 +31,5 @@ function dishineritScale( l ) {
 			s = [ s[0]/ps[0], s[1]/ps[1] ];
 		}
     }
-    return r;
+    return s;
 }
