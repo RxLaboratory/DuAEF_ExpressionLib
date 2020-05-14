@@ -545,6 +545,7 @@ result += values[i];
 }
 return result / num;
 }
+if (typeof Math.sign === 'undefined') Math.sign = function(x) { return ((x > 0) - (x < 0)) || +x; };
 function checkDuikEffect(fx, duikMatchName) {
 if (fx.numProperties  < 3) return false;
 if (!!$.engineName) {
