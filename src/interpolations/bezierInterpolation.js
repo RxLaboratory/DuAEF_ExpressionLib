@@ -12,7 +12,7 @@
  * @return {number} the value.
  */
 function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {
-    if (arguments.length !== 5) return value;
+    if (arguments.length !== 5 && arguments.length !== 6) return t;
     var a = value2 - value1;
     var b = tMax - tMin;
     if (b == 0) return t;
