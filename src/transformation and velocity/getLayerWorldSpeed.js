@@ -5,7 +5,6 @@
  * @param {Layer} [l=thisLayer] The layer
  * @return {number} A positive number. The speed.
  * @requires getLayerWorldVelocity
- * @requires getLayerWorldPos
  */
 function getLayerWorldSpeed(t, l) {
 	return length(getWorldVelocity(t, l));

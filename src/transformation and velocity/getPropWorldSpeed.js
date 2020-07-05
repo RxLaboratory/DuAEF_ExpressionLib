@@ -5,8 +5,6 @@
  * @param {Layer} [prop=thisProperty] The property
  * @return {number[]} The world speed
  * @requires getPropWorldVelocity
- * @requires getPropWorldValue
- * @requires getLayerWorldPos
  */
 function getPropWorldSpeed(t, prop) {
 	return length(getPropWorldVelocity(t, prop));

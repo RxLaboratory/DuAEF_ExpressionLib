@@ -4,7 +4,6 @@
  * @function
  * @param {number[]} point The 2D coordinates of the point in the current group.
  * @return {number[]} The 2D coordinates of the point in the Layer.
- * @requires isLayer
  * @requires Matrix
  * @requires getGroupTransformMatrix
  */

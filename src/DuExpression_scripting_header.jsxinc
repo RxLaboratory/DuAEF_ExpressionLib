@@ -1,0 +1,35 @@
+/* License
+	DuAEF_DuExpressionLib
+
+	Copyright (c) 2020 Nicolas Dufresne, Rainbox Laboratory
+
+	This file is part of DuExpression - The Duduf Expression Library.
+
+		DuExpression is free software: you can redistribute it and/or modify
+		it under the terms of the GNU General Public License as published by
+		the Free Software Foundation, either version 3 of the License, or
+		(at your option) any later version.
+
+		DuExpression is distributed in the hope that it will be useful,
+		but WITHOUT ANY WARRANTY; without even the implied warranty of
+		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+		GNU General Public License for more details.
+
+		You should have received a copy of the GNU General Public License
+		along with DuExpression. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/*
+    This script can be included in any other script and can be used to easily include Functions from the Duduf Expression Library into your own expressions.
+    It is also available in DuAEF, along with some useful functions to help you include requirements when adding a function to your expressions.
+*/
+
+if (typeof DuAEF === "undefined") DuAEF = {};
+if (typeof DuAEF.DuExpression === "undefined") DuAEF.DuExpression = {};
+
+/**
+* Expression Library
+* @namespace
+* @memberof DuAEF.DuExpression
+*/
+DuAEF.DuExpression.Library = {};

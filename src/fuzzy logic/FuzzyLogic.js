@@ -5,6 +5,10 @@
   * @author Duduf
   * @license GPL-v3
   * @copyright Duduf 2020
+  * @requires logistic
+  * @requires inverseLogistic
+  * @requires gaussian
+  * @requires inverseGaussian
 */
 
 function FuzzySet( name, valueNot, valueIS, shape, shapeAbove, plateauMin, plateauMax)

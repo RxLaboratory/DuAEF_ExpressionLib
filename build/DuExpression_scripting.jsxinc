@@ -1,5 +1,32 @@
+/* License
+	DuAEF_DuExpressionLib
+
+	Copyright (c) 2020 Nicolas Dufresne, Rainbox Laboratory
+
+	This file is part of DuExpression - The Duduf Expression Library.
+
+		DuExpression is free software: you can redistribute it and/or modify
+		it under the terms of the GNU General Public License as published by
+		the Free Software Foundation, either version 3 of the License, or
+		(at your option) any later version.
+
+		DuExpression is distributed in the hope that it will be useful,
+		but WITHOUT ANY WARRANTY; without even the implied warranty of
+		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+		GNU General Public License for more details.
+
+		You should have received a copy of the GNU General Public License
+		along with DuExpression. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/*
+    This script can be included in any other script and can be used to easily include Functions from the Duduf Expression Library into your own expressions.
+    It is also available in DuAEF, along with some useful functions to help you include requirements when adding a function to your expressions.
+*/
+
 if (typeof DuAEF === "undefined") DuAEF = {};
 if (typeof DuAEF.DuExpression === "undefined") DuAEF.DuExpression = {};
+
 /**
 * Expression Library
 * @namespace
@@ -433,6 +460,7 @@ DuAEF.DuExpression.Library.FuzzyLogic = ['function FuzzySet( name, valueNot, val
 	'return qObj;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.FuzzyLogic.requirements = [];
 
 /**
  * Interpolates a value with a bezier curve.<br />
@@ -472,6 +500,7 @@ DuAEF.DuExpression.Library.bezierInterpolation = ['function bezierInterpolation(
 	'}',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.bezierInterpolation.requirements = [];
 
 /**
  * Interpolates a value with a gaussian function.<br />
@@ -513,6 +542,7 @@ DuAEF.DuExpression.Library.gaussianInterpolation = ['function gaussianInterpolat
 	'return result;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.gaussianInterpolation.requirements = [];
 
 /**
  * Gets the key immediately after the given time
@@ -529,6 +559,7 @@ DuAEF.DuExpression.Library.getNextKey = ['function getNextKey(t) {',
 	'return null;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.getNextKey.requirements = [];
 
 /**
  * Gets the key immediately before the given time
@@ -545,6 +576,7 @@ DuAEF.DuExpression.Library.getPrevKey = ['function getPrevKey(t) {',
 	'return null;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.getPrevKey.requirements = [];
 
 /**
  * Checks if current time is after the time of the last key in the property
@@ -557,6 +589,7 @@ DuAEF.DuExpression.Library.isAfterLastKey = ['function isAfterLastKey() {',
 	'return nKey.time <= time && nKey.index == numKeys;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.isAfterLastKey.requirements = [];
 
 /**
     * The gaussian function
@@ -583,6 +616,7 @@ DuAEF.DuExpression.Library.gaussian = ['function gaussian( value, min, max, cent
 	'return result * (max-min) + min;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.gaussian.requirements = [];
 
 /**
     * The inverse gaussian function
@@ -610,6 +644,7 @@ DuAEF.DuExpression.Library.inverseGaussian = ['function inverseGaussian ( v, min
 	'return [ result + center, -result + center ];',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.inverseGaussian.requirements = [];
 
 /**
     * The inverse logistic function (inverse sigmoid)
@@ -631,6 +666,7 @@ DuAEF.DuExpression.Library.inverseLogisitic = ['function inverseLogistic ( v, mi
 	'return midValue - Math.log( (max-min)/(v-min) - 1) / rate;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.inverseLogisitic.requirements = [];
 
 /**
     * The logistic function (sigmoid)
@@ -653,6 +689,7 @@ DuAEF.DuExpression.Library.logisitic = ['function logistic( value, midValue, min
 	'return result * (max-min) + min;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.logisitic.requirements = [];
 
 /**
     * Returns the mean of a set of values
@@ -671,6 +708,7 @@ DuAEF.DuExpression.Library.mean = ['function mean( values )',
 	'return result / num;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.mean.requirements = [];
 
 /**
     * Fix for the ExtendScript engine, implements the Math.sign function.
@@ -681,6 +719,7 @@ DuAEF.DuExpression.Library.mean = ['function mean( values )',
     */
 DuAEF.DuExpression.Library.sign = ['if (typeof Math.sign === \'undefined\') Math.sign = function(x) { return ((x > 0) - (x < 0)) || +x; };'
 	].join('\n');
+DuAEF.DuExpression.Library.sign.requirements = [];
 
 /**
  * Checks the type of a pseudo-effect used by Duik.<br />
@@ -706,6 +745,7 @@ DuAEF.DuExpression.Library.checkDuikEffect = ['function checkDuikEffect(fx, duik
 	'return true;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.checkDuikEffect.requirements = [];
 
 /**
  * Checks the type of an effect.<br />
@@ -732,6 +772,7 @@ DuAEF.DuExpression.Library.checkEffect = ['function checkEffect(fx, propIndex, p
 	'return true;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.checkEffect.requirements = [];
 
 /**
  * Gets a layer from a layer property in an effect, without generating an error if "None" is selected with the Legacy expression engine.
@@ -745,6 +786,7 @@ DuAEF.DuExpression.Library.getEffectLayer = ['function getEffectLayer( fx, ind )
 	'catch ( e ) { return null; }',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.getEffectLayer.requirements = [];
 
 /**
  * Checks if a property is a layer. Useful when traversing up the property tree to stop when getting the layer.
@@ -757,6 +799,7 @@ DuAEF.DuExpression.Library.isLayer = ['function isLayer( prop ) {',
 	'catch (e) { return false; }',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.isLayer.requirements = [];
 
 /**
  * Checks if a property is a transform.position property.
@@ -773,6 +816,7 @@ DuAEF.DuExpression.Library.isPosition = ['function isPosition(prop) {',
 	'return false;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.isPosition.requirements = [];
 
 /**
  * Checks if a property is spatial
@@ -791,6 +835,7 @@ DuAEF.DuExpression.Library.isSpatial = ['function isSpatial(prop) {',
 	'}',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.isSpatial.requirements = [];
 
 /**
  * Checks if the current property is animated at a given time.
@@ -817,6 +862,7 @@ DuAEF.DuExpression.Library.isStill = ['function isStill(t, threshold) {',
 	'}',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.isStill.requirements = [];
 
 /**
  * Adds some noise to a value.<br />
@@ -839,6 +885,7 @@ DuAEF.DuExpression.Library.addNoise = ['function addNoise( val, quantity ) {',
 	'return val * ( noiseValue + 1 );',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.addNoise.requirements = [];
 
 /**
  * Removes the ancestors rotation from the rotation of a layer.
@@ -867,6 +914,7 @@ DuAEF.DuExpression.Library.dishineritRotation = ['function dishineritRotation( l
 	'return r;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.dishineritRotation.requirements = [];
 
 /**
  * Removes the ancestors scale from the scale of a layer.
@@ -904,6 +952,7 @@ DuAEF.DuExpression.Library.dishineritScale = ['function dishineritScale( l ) {',
 	'return s;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.dishineritScale.requirements = [];
 
 /**
  * Converts the point coordinates from the current group in the shape layer to the Layer.<br />
@@ -920,6 +969,7 @@ DuAEF.DuExpression.Library.fromGroupToLayer = ['function fromGroupToLayer( point
 	'return matrix.applyToPoint( point );',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.fromGroupToLayer.requirements = ["isLayer","Matrix","getGroupTransformMatrix"];
 
 /**
  * Converts the point coordinates from Layer to the current group in the shape layer.<br />
@@ -936,6 +986,7 @@ DuAEF.DuExpression.Library.fromLayerToGroup = ['function fromLayerToGroup( point
 	'return matrix.applyToPoint( point );',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.fromLayerToGroup.requirements = ["isLayer","Matrix","getGroupTransformMatrix"];
 
 /**
  * Gets the "real" scale of a layer, resulting to its scale property, the scale of its parents, and it's location in Z-space if it's 3D.
@@ -954,6 +1005,7 @@ DuAEF.DuExpression.Library.getCompScale = ['function getCompScale( l, t ) {',
 	'return newWidth / originalWidth;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.getCompScale.requirements = [];
 
 /**
  * Gets the transformation Matrix for the current group in a shape layer, including the transformation from the ancestor groups
@@ -987,6 +1039,7 @@ DuAEF.DuExpression.Library.getGroupTransformMatrix = ['function getGroupTransfor
 	'return matrix;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.getGroupTransformMatrix.requirements = ["isLayer","Matrix"];
 
 /**
  * Gets the comp position (2D Projection in the comp) of a layer.
@@ -1001,6 +1054,7 @@ DuAEF.DuExpression.Library.getLayerCompPos = ['function getLayerCompPos( t, l ) 
 	'return l.toComp( l.anchorPoint, t );',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.getLayerCompPos.requirements = [];
 
 /**
  * Gets the world position of a layer.
@@ -1015,6 +1069,7 @@ DuAEF.DuExpression.Library.getLayerWorldPos = ['function getLayerWorldPos(t, l) 
 	'return l.toWorld(l.anchorPoint, t);',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.getLayerWorldPos.requirements = [];
 
 /**
  * Gets the world instant speed of a layer.
@@ -1029,6 +1084,7 @@ DuAEF.DuExpression.Library.getLayerWorldSpeed = ['function getLayerWorldSpeed(t,
 	'return length(getWorldVelocity(t, l));',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.getLayerWorldSpeed.requirements = ["getLayerWorldVelocity","getLayerWorldPos"];
 
 /**
  * Gets the world instant velocity of a layer.
@@ -1043,6 +1099,7 @@ DuAEF.DuExpression.Library.getLayerWorldVelocity = ['function getLayerWorldVeloc
 	'return (getWorldPos(t, l) - getWorldPos(t - 0.01, l)) * 100;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.getLayerWorldVelocity.requirements = ["getLayerWorldPos"];
 
 /**
  * Gets the world orientation of a (2D) layer.
@@ -1087,6 +1144,7 @@ DuAEF.DuExpression.Library.getOrientation = ['function getOrientation( l ) {',
 	'else return 0;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.getOrientation.requirements = [];
 
 /**
  * Gets the world orientation of a (2D) layer at a specific time.
@@ -1106,6 +1164,7 @@ DuAEF.DuExpression.Library.getOrientationAtTime = ['function getOrientationAtTim
 	'return r;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.getOrientationAtTime.requirements = [];
 
 /**
  * Gets the world speed of a property.
@@ -1121,6 +1180,7 @@ DuAEF.DuExpression.Library.getPropWorldSpeed = ['function getPropWorldSpeed(t, p
 	'return length(getPropWorldVelocity(t, prop));',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.getPropWorldSpeed.requirements = ["getPropWorldVelocity","getPropWorldValue","getLayerWorldPos"];
 
 /**
  * Gets the world coordinates of a property.
@@ -1137,6 +1197,7 @@ DuAEF.DuExpression.Library.getPropWorldValue = ['function getPropWorldValue(t, p
 	'return thisLayer.toWorld(prop.valueAtTime(t), t);',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.getPropWorldValue.requirements = ["getLayerWorldPos"];
 
 /**
  * Gets the world velocity of a property.
@@ -1152,6 +1213,7 @@ DuAEF.DuExpression.Library.getPropWorldVelocity = ['function getPropWorldVelocit
 	'return (getPropWorldValue(t + 0.005, prop) - getPropWorldValue(t - 0.005, prop)) * 100;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.getPropWorldVelocity.requirements = ["getPropWorldValue","getLayerWorldPos"];
 
 /**
  * Gets the world scale of a layer.
@@ -1178,6 +1240,7 @@ DuAEF.DuExpression.Library.getScale = ['function getScale( l ) {',
 	'return s;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.getScale.requirements = [];
 
 /**
   * 2D transformation matrix object initialized with identity matrix. See the source code for more documentation.
@@ -1363,6 +1426,7 @@ DuAEF.DuExpression.Library.Matrix = ['function Matrix() {',
 	'}',
 	'};'
 	].join('\n');
+DuAEF.DuExpression.Library.Matrix.requirements = [];
 
 /**
  * Translates a point with a layer, as if it was parented to it.
@@ -1386,4 +1450,5 @@ DuAEF.DuExpression.Library.translatePointWithLayer = ['function translatePointWi
 	'return newPos - prevPos;',
 	'}'
 	].join('\n');
+DuAEF.DuExpression.Library.translatePointWithLayer.requirements = [];
 

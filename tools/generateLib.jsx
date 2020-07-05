@@ -10,6 +10,8 @@
     var reRemoveComment = /\/\/.*$/gm;
     var reRemoveSpaces = /^[\r\n\s]*|[\r\n\s]*$/gm;
     var reRemoveEmpty = /[\r\n]*/gm;
+    var reRequirements = /\s*\s*@requires\s*(\w+)/gm;
+    var reRequirement = /\s*\s*@requires\s*(\w+)/;
 
     function scriptifyExpression( exp, min ) {
 
@@ -37,8 +39,14 @@
         return expString;
     }
 
-    //list all files and get content
-    var expressions = [];
+    //create content
+    var jsContent = '';
+    var jsFUllContent = '';
+    // get jsxinc header
+    var jxincHeaderFile = new File(expressionFolder.absoluteURI + "/" + "DuExpression_scripting_header.jsxinc" );
+    jxincHeaderFile.open('r');
+    var jsxincContent = jxincHeaderFile.read() + '\n';
+    jxincHeaderFile.close();
 
     function filter( f ) {
         if (f instanceof Folder) return true;
@@ -58,46 +66,40 @@
                 getExpresssions( file );
                 continue;
             } 
-            var expression = {};
-            expression.name = file.name.substring(0, file.name.length - 3);
+            var name = file.name.substring(0, file.name.length - 3);
             file.open('r');
             var fileContent = file.read();
             var match = fileContent.match(reDoc);
-            expression.doc = match[1];
-            expression.expressionWithDoc = match[2];
-            expression.original = fileContent;
-            expression.expression = match[2].replace( reRemoveDoc , '').replace(reRemoveComment, '').replace( reRemoveSpaces, '');//.replace( reRemoveEmpty, '');
+            var doc = match[1];
+            var expressionWithDoc = match[2];
+            var original = fileContent;
+            var expression = match[2].replace( reRemoveDoc , '').replace(reRemoveComment, '').replace( reRemoveSpaces, '');//.replace( reRemoveEmpty, '');
+
+            jsxincContent += doc + '\n';
+            jsxincContent += 'DuAEF.DuExpression.Library.' + name + " = " + scriptifyExpression(expression, false) + '\n';
+            var reqs = doc.match(reRequirements);
+            jsxincContent += 'DuAEF.DuExpression.Library.' + name + '.requirements = [';
+            if(reqs) {  
+                for (var r = 0, rN = reqs.length; r < rN; r++)
+                {
+                    var req = reRequirement.exec(reqs[r]);
+                    if (!req) continue;
+                    if (r!=0) jsxincContent += ',';
+                    jsxincContent += '"' + req[1] + '"';
+                }
+            }
+            jsxincContent += '];\n\n';
+
+            jsFullContent += original + '\n\n';
+
+            jsContent += expression + '\n';
+
             file.close();
-            expressions.push(expression);
         }
     }
 
     getExpresssions(expressionFolder);   
     
-    //create content
-    var jsContent = '';
-    var jsFUllContent = '';
-    var jsxincContent = [
-        'if (typeof DuAEF === "undefined") DuAEF = {};',
-        'if (typeof DuAEF.DuExpression === "undefined") DuAEF.DuExpression = {};',
-        '/**',
-        '* Expression Library',
-        '* @namespace',
-        '* @memberof DuAEF.DuExpression',
-        '*/',
-        'DuAEF.DuExpression.Library = {};',
-        '',
-        ''
-        ].join('\n');
-    for (var i = 0, num = expressions.length; i < num; i++)
-    {
-        var exp = expressions[i];
-        jsxincContent += exp.doc + '\n';
-        jsxincContent += 'DuAEF.DuExpression.Library.' + exp.name + " = " + scriptifyExpression(exp.expression, false) + '\n\n';
-        jsFullContent += exp.original + '\n\n';
-        jsContent += exp.expression + '\n';
-    }
-
     //write
     var jsxinc = new File(repoFolder.absoluteURI + "/build/DuExpression_scripting.jsxinc");
     var js = new File(repoFolder.absoluteURI + "/build/DuExpression.js");

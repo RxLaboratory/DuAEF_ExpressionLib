@@ -5,6 +5,7 @@
  * @param {Layer} [prop=thisProperty] The property
  * @return {number[]} The world coordinates
  * @requires getLayerWorldPos
+ * @requires isPosition
  */
 function getPropWorldValue(t, prop) {
 	if (typeof prop === "undefined") prop = thisProperty;
