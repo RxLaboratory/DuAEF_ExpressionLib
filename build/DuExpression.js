@@ -446,6 +446,12 @@ if (typeof value1 === "undefined") value1 = 0;
 if (typeof tMin === "undefined") tMin = 0;
 if (typeof tMax === "undefined") tMax = 1;
 if (typeof rate === "undefined") rate = 0;
+if (t != tMin)
+{
+var newValue1 = gaussianInterpolation( tMin, tMin, tMax, value1, value2, rate );
+var offset = newValue1 - value1;
+value1 = value1 - offset;
+}
 if (rate < 0) rate = rate*10;
 rate = linear(t, tMin, tMax, 0.25, rate);
 var r = ( 1 - rate );
@@ -459,11 +465,6 @@ exp *= Math.pow((t - center),2);
 exp *= 1/ Math.pow(fwhm, 2);
 var result = Math.pow(Math.E, exp);
 result = result * (value2-value1) + value1;
-if (rate != 0)
-{
-var iMin = ( tMax-tMin)*(rate/2) + tMin;
-var iVal = value2 - (value2-value1)*(rate);
-}
 return result;
 }
 function getNextKey(t) {
