@@ -702,7 +702,7 @@ return length(getWorldVelocity(t, l));
 }
 function getLayerWorldVelocity(t, l) {
 if (typeof t === "undefined") t = time;
-return (getWorldPos(t, l) - getWorldPos(t - 0.01, l)) * 100;
+return (getLayerWorldPos(t, l) - getLayerWorldPos(t - 0.01, l)) * 100;
 }
 function getOrientation( l ) {
 var sign = getScaleMirror( l );

@@ -76,9 +76,10 @@
             var expression = match[2].replace( reRemoveDoc , '').replace(reRemoveComment, '').replace( reRemoveSpaces, '');//.replace( reRemoveEmpty, '');
 
             jsxincContent += doc + '\n';
-            jsxincContent += 'DuAEF.DuExpression.Library.' + name + " = " + scriptifyExpression(expression, false) + '\n';
+            jsxincContent += 'DuAEF.DuExpression.Library["' + name + '"] = {};\n';
+            jsxincContent += 'DuAEF.DuExpression.Library["' + name + '"].expression = ' + scriptifyExpression(expression, false) + '\n';
             var reqs = doc.match(reRequirements);
-            jsxincContent += 'DuAEF.DuExpression.Library.' + name + '.requirements = [';
+            jsxincContent += 'DuAEF.DuExpression.Library["' + name + '"].requirements = [';
             if(reqs) {  
                 for (var r = 0, rN = reqs.length; r < rN; r++)
                 {

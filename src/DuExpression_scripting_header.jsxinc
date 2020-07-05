@@ -32,4 +32,4 @@ if (typeof DuAEF.DuExpression === "undefined") DuAEF.DuExpression = {};
 * @namespace
 * @memberof DuAEF.DuExpression
 */
-DuAEF.DuExpression.Library = {};
+DuAEF.DuExpression.Library = [];
