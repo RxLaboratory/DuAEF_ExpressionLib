@@ -1262,7 +1262,7 @@ function getPropWorldVelocity(t, prop) {
 /**
  * Gets the world scale of a layer.
  * @function
- * @param {Layer} l The layer to get the orientation from
+ * @param {Layer} l The layer to get the scale from
  * @return {float[]} The scale, in percent.
  */
 function getScale( l ) {
