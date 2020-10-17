@@ -1,11 +1,11 @@
 /**
- * Checks if a property is a transform.position property.
+ * Checks if a property is a transform.position property.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {Property} [prop=thisProperty] The property
  * @return {boolean} true if the property is the transform.position property.
  */
 function isPosition(prop) {
-	if (typeof prop === "undefined") prop = thisProperty;
 	if (!(prop.value instanceof Array)) return false;
 	if (prop.value.length > 3) return false;
 	//compare the name, index and value with the real position

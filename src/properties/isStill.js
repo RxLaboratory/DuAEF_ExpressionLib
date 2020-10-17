@@ -1,13 +1,12 @@
 /**
- * Checks if the current property is animated at a given time.
+ * Checks if the current property is animated at a given time.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] The time
  * @param {number} [threshold=0.1] The speed under which the property is considered still.
  * @return {boolean} true if the property does not vary.
  */
 function isStill(t, threshold) {
-	if (typeof t === "undefined") t = time;
-	if (typeof threshold === "undefined") threshold = 0.1;
 	var d = valueAtTime(t) - valueAtTime(t + framesToTime(1));
 
 	if (d instanceof Array) {

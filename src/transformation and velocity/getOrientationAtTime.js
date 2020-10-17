@@ -1,12 +1,12 @@
 /**
- * Gets the world orientation of a (2D) layer at a specific time.
+ * Gets the world orientation of a (2D) layer at a specific time.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {Layer} l The layer to get the orientation from
  * @param {float} [t=time] The time at which to get the orientation
  * @return {float} The orientation, in degrees.
  */
 function getOrientationAtTime( l, t ) {
-    if (typeof t === "undefined" ) t = time;
     var r = 0;
     r += l.rotation.valueAtTime( t );
     while ( l.hasParent ) {

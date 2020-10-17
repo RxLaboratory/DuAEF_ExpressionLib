@@ -1,5 +1,6 @@
 /**
-    * The inverse gaussian function
+    * The inverse gaussian function<br />
+    * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
     * @function
     * @param {Number} v The variable
     * @param {Number} [min=0] The minimum return value of the corresponding gaussian function
@@ -10,10 +11,6 @@
     */
 function inverseGaussian ( v, min, max, center, fwhm)
 {
-    if (typeof max === "undefined") max = 1;
-    if (typeof min === "undefined") min = 0;
-    if (typeof center === "undefined") center = 0;
-    if (typeof fwhm === "undefined") fwhm = 1;
     if (v == 1) return [center, center];
     if (v === 0) return [center + fwhm/2, center - fwhm/2];
     if (fwhm === 0) return [center, center];

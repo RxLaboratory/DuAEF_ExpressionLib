@@ -1,6 +1,7 @@
 /**
  * Removes the ancestors scale from the scale of a layer.
- * This is very useful to make a layer keep its scale without being influenced by its parents.
+ * This is very useful to make a layer keep its scale without being influenced by its parents.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @example
  * //in a rotation property, just include the function and use:
@@ -15,7 +16,6 @@
  * @return {float[]} The new scale value, in percent.
  */
 function dishineritScale( l ) {
-    if (typeof l === "undefined") l = thisLayer;
     var s = l.scale.value;
     var threeD = s.length == 3;
     while ( l.hasParent ) {

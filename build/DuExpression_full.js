@@ -1,5 +1,5 @@
-undefined/**
-  * Fuzzy Logics for expressions. See {@link https://github.com/Nico-Duduf/DuFuzzyLogic} for more explanations
+/**
+  *  Fuzzy Logics for expressions. See {@link https://github.com/Nico-Duduf/DuFuzzyLogic} for more explanations
   * @class
   * @classdesc Fuzzy Logics for expressions. See {@link https://github.com/Nico-Duduf/DuFuzzyLogic} for more explanations
   * @author Duduf
@@ -544,14 +544,14 @@ function createQuantifier( q )
 
 /**
  * Interpolates a value with a bezier curve.<br />
- * This method can replace <code>linear()</code> and <code>ease()</code> with a custom bézier interpolation.
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a custom bï¿½zier interpolation.
  * @function
  * @param {number} t The value to interpolate
  * @param {number} [tMin=0] The minimum value of the initial range
  * @param {number} [tMax=1] The maximum value of the initial range
  * @param {number} [value1=0] The minimum value of the interpolated result
  * @param {number} [value2=1] The maximum value of the interpolated result
- * @param {number[]} [bezierPoints=[0.33,0.0,0.66,1.0]] an Array of 4 coordinates wihtin the [0.0, 1.0] range which describes the Bézier interpolation. The default mimics the native ease() function<br />
+ * @param {number[]} [bezierPoints=[0.33,0.0,0.66,1.0]] an Array of 4 coordinates wihtin the [0.0, 1.0] range which describes the Bï¿½zier interpolation. The default mimics the native ease() function<br />
  * [ outTangentX, outTangentY, inTangentX, inTangentY ]
  * @return {number} the value.
  */
@@ -584,7 +584,8 @@ function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {
 
 /**
  * Interpolates a value with a gaussian function.<br />
- * This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} t The value to interpolate
  * @param {number} [tMin=0] The minimum value of the initial range
@@ -596,11 +597,6 @@ function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {
  */
 function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )
 {
-    if (typeof value2 === "undefined") value2 = 1;
-    if (typeof value1 === "undefined") value1 = 0;
-    if (typeof tMin === "undefined") tMin = 0;
-    if (typeof tMax === "undefined") tMax = 1;
-    if (typeof rate === "undefined") rate = 0;
     // fix small bump at first value
     if (t != tMin)
     {
@@ -626,13 +622,13 @@ function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )
 }
 
 /**
- * Gets the key immediately after the given time
+ * Gets the key immediately after the given time<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] Time at which to get the key
  * @return {Key|null} The key, or null if there's no key before.
  */
 function getNextKey(t) {
-    if (typeof t === "undefined") t = time;
     if (numKeys == 0) return null;
     var nKey = nearestKey(t);
     if (nKey.time >= t) return nKey;
@@ -642,13 +638,13 @@ function getNextKey(t) {
   
 
 /**
- * Gets the key immediately before the given time
+ * Gets the key immediately before the given time<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] Time at which to get the key
  * @return {Key|null} The key, or null if there's no key before.
  */
 function getPrevKey(t) {
-    if (typeof t === "undefined") t = time;
     if (numKeys == 0) return null;
     var nKey = nearestKey(t);
     if (nKey.time <= t) return nKey;
@@ -669,7 +665,8 @@ function isAfterLastKey() {
 
 
 /**
-    * The gaussian function
+    * The gaussian function<br />
+    * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
     * @function
     * @param {Number} value The variable
     * @param {Number} [min=0] The minimum return value
@@ -680,10 +677,6 @@ function isAfterLastKey() {
     */
 function gaussian( value, min, max, center, fwhm)
 {
-    if (typeof max === "undefined") max = 1;
-    if (typeof min === "undefined") min = 0;
-    if (typeof center === "undefined") center = 0;
-    if (typeof fwhm === "undefined") fwhm = 1;
     if (fwhm === 0 && value == center) return max;
     else if (fwhm === 0) return 0;
 
@@ -695,7 +688,8 @@ function gaussian( value, min, max, center, fwhm)
 }
 
 /**
-    * The inverse gaussian function
+    * The inverse gaussian function<br />
+    * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
     * @function
     * @param {Number} v The variable
     * @param {Number} [min=0] The minimum return value of the corresponding gaussian function
@@ -706,10 +700,6 @@ function gaussian( value, min, max, center, fwhm)
     */
 function inverseGaussian ( v, min, max, center, fwhm)
 {
-    if (typeof max === "undefined") max = 1;
-    if (typeof min === "undefined") min = 0;
-    if (typeof center === "undefined") center = 0;
-    if (typeof fwhm === "undefined") fwhm = 1;
     if (v == 1) return [center, center];
     if (v === 0) return [center + fwhm/2, center - fwhm/2];
     if (fwhm === 0) return [center, center];
@@ -722,8 +712,8 @@ function inverseGaussian ( v, min, max, center, fwhm)
 }
 
 /**
-    * The inverse logistic function (inverse sigmoid)
-    * @function
+    * The inverse logistic function (inverse sigmoid)<br />
+    * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.    * @function
     * @param {Number} v The variable
     * @param {Number} [midValue=0] The midpoint value, at which the function returns max/2 in the original logistic function
     * @param {Number} [min=0] The minimum return value of the original logistic function
@@ -733,18 +723,14 @@ function inverseGaussian ( v, min, max, center, fwhm)
     */
 function inverseLogistic ( v, midValue, min, max, rate)
 {
-    if (typeof midValue === "undefined") midValue = 0;
-    if (typeof max === "undefined") max = 1;
-    if (typeof min === "undefined") min = 0;
-    if (typeof rate === "undefined") rate = 1;
-
     if (v == min) return 0;
     
     return midValue - Math.log( (max-min)/(v-min) - 1) / rate;
 }
 
 /**
-    * The logistic function (sigmoid)
+    * The logistic function (sigmoid)<br />
+    * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
     * @function
     * @param {Number} value The value
     * @param {Number} [midValue=0] The midpoint value, at which the function returns max/2
@@ -755,10 +741,6 @@ function inverseLogistic ( v, midValue, min, max, rate)
     */
 function logistic( value, midValue, min, max, rate)
 {
-    if (typeof midValue === "undefined") midValue = 0;
-    if (typeof max === "undefined") max = 1;
-    if (typeof min === "undefined") min = 0;
-    if (typeof rate === "undefined") rate = 1;
     var exp = -rate*(value - midValue);
     var result = 1 / (1 + Math.pow(Math.E, exp));
     return result * (max-min) + min;
@@ -866,13 +848,13 @@ function isLayer( prop ) {
 }
 
 /**
- * Checks if a property is a transform.position property.
+ * Checks if a property is a transform.position property.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {Property} [prop=thisProperty] The property
  * @return {boolean} true if the property is the transform.position property.
  */
 function isPosition(prop) {
-	if (typeof prop === "undefined") prop = thisProperty;
 	if (!(prop.value instanceof Array)) return false;
 	if (prop.value.length > 3) return false;
 	//compare the name, index and value with the real position
@@ -887,27 +869,21 @@ function isPosition(prop) {
  * @return {boolean} true if the property is spatial.
  */
 function isSpatial(prop) {
-	if (typeof prop === "undefined") prop = thisProperty;
 	if (!(prop.value instanceof Array)) return false;
 	if (prop.value.length != 2 && prop.value.length != 3) return false;
-	try {
-		sp = prop.speed;
-		return true;
-	} catch (e) {
-		return false;
-	}
+	if (typeof prop.speed === "undefined") return false;
+	return true;
 }
 
 /**
- * Checks if the current property is animated at a given time.
+ * Checks if the current property is animated at a given time.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] The time
  * @param {number} [threshold=0.1] The speed under which the property is considered still.
  * @return {boolean} true if the property does not vary.
  */
 function isStill(t, threshold) {
-	if (typeof t === "undefined") t = time;
-	if (typeof threshold === "undefined") threshold = 0.1;
 	var d = valueAtTime(t) - valueAtTime(t + framesToTime(1));
 
 	if (d instanceof Array) {
@@ -951,7 +927,8 @@ function addNoise( val, quantity ) {
 
 /**
  * Removes the ancestors rotation from the rotation of a layer.
- * This is very useful to make a layer keep its orientation without being influenced by its parents.
+ * This is very useful to make a layer keep its orientation without being influenced by its parents.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @example
  * //in a rotation property, just include the function and use:
@@ -967,7 +944,6 @@ function addNoise( val, quantity ) {
  * @requires sign
  */
 function dishineritRotation( l ) {
-    if (typeof l === "undefined") l = thisLayer;
     var r = l.rotation.value;
     while ( l.hasParent ) {
         l = l.parent;
@@ -979,7 +955,8 @@ function dishineritRotation( l ) {
 
 /**
  * Removes the ancestors scale from the scale of a layer.
- * This is very useful to make a layer keep its scale without being influenced by its parents.
+ * This is very useful to make a layer keep its scale without being influenced by its parents.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @example
  * //in a rotation property, just include the function and use:
@@ -994,7 +971,6 @@ function dishineritRotation( l ) {
  * @return {float[]} The new scale value, in percent.
  */
 function dishineritScale( l ) {
-    if (typeof l === "undefined") l = thisLayer;
     var s = l.scale.value;
     var threeD = s.length == 3;
     while ( l.hasParent ) {
@@ -1042,16 +1018,14 @@ function fromLayerToGroup( point ) {
 }
 
 /**
- * Gets the "real" scale of a layer, resulting to its scale property, the scale of its parents, and it's location in Z-space if it's 3D.
+ * Gets the "real" scale of a layer, resulting to its scale property, the scale of its parents, and it's location in Z-space if it's 3D.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {Layer} [l=thisLayer] The layer 
  * @param {number} [t=time] The time when to get the scale
  * @return {number} The scale ratio. This is not a percent, 1.0 is 100%.
  */
 function getCompScale( l, t ) {
-	if (typeof l === "undefined") l = thisLayer;
-	if (typeof t === "undefined") t = time;
-	
 	//get ratio 
 	var originalWidth = length( l.anchorPoint, [ l.width, 0 ] );
 	var anchorInComp = l.toComp( l.anchorPoint, t );
@@ -1061,7 +1035,8 @@ function getCompScale( l, t ) {
 }
 
 /**
- * Gets the transformation Matrix for the current group in a shape layer, including the transformation from the ancestor groups
+ * Gets the transformation Matrix for the current group in a shape layer, including the transformation from the ancestor groups<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {Property} [prop=thisProperty] The property from which to get the matrix
  * @return {Matrix} The 2D Transform Matrix.
@@ -1069,7 +1044,6 @@ function getCompScale( l, t ) {
  * @requires Matrix
  */
 function getGroupTransformMatrix( prop ) {
-	if (typeof group === "undefined") prop = thisProperty;
     // A Matrix to apply group transforms
     var matrix = new Matrix();
 
@@ -1104,28 +1078,26 @@ function getGroupTransformMatrix( prop ) {
 }
 
 /**
- * Gets the comp position (2D Projection in the comp) of a layer.
+ * Gets the comp position (2D Projection in the comp) of a layer.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [l=thisLayer] The layer
  * @return {number[]} The comp position
  */
 function getLayerCompPos( t, l ) {
-    if (typeof l === "undefined") l = thisLayer;
-    if (typeof t === "undefined") t = time;
     return l.toComp( l.anchorPoint, t );
 }
 
 /**
- * Gets the world position of a layer.
+ * Gets the world position of a layer.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [l=thisLayer] The layer
  * @return {number[]} The world position
  */
 function getLayerWorldPos(t, l) {
-	if (typeof l === "undefined") l = thisLayer;
-	if (typeof t === "undefined") t = time;
 	return l.toWorld(l.anchorPoint, t);
 }
 
@@ -1143,7 +1115,8 @@ function getLayerWorldSpeed(t, l) {
 }
 
 /**
- * Gets the world instant velocity of a layer.
+ * Gets the world instant velocity of a layer.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] The time when to get the velocity
  * @param {Layer} [l=thisLayer] The layer
@@ -1151,7 +1124,6 @@ function getLayerWorldSpeed(t, l) {
  * @requires getLayerWorldPos
  */
 function getLayerWorldVelocity(t, l) {
-	if (typeof t === "undefined") t = time;
 	return (getLayerWorldPos(t, l) - getLayerWorldPos(t - 0.01, l)) * 100;
 }
 
@@ -1178,7 +1150,6 @@ function getOrientation( l ) {
 }
 
 function getScaleMirror( l ) {
-    if (typeof l === "undefined") l = thisLayer;
     var sign = 1;
     while (l.hasParent) {
       l = l.parent;
@@ -1189,7 +1160,6 @@ function getScaleMirror( l ) {
 }
 
 function getScaleUTurn( l ) {
-    if (typeof l === "undefined") l = thisLayer;
     var u = 1;
     while (l.hasParent) {
       l = l.parent;
@@ -1201,14 +1171,14 @@ function getScaleUTurn( l ) {
 }
 
 /**
- * Gets the world orientation of a (2D) layer at a specific time.
+ * Gets the world orientation of a (2D) layer at a specific time.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {Layer} l The layer to get the orientation from
  * @param {float} [t=time] The time at which to get the orientation
  * @return {float} The orientation, in degrees.
  */
 function getOrientationAtTime( l, t ) {
-    if (typeof t === "undefined" ) t = time;
     var r = 0;
     r += l.rotation.valueAtTime( t );
     while ( l.hasParent ) {
@@ -1231,7 +1201,8 @@ function getPropWorldSpeed(t, prop) {
 }
 
 /**
- * Gets the world coordinates of a property.
+ * Gets the world coordinates of a property.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [prop=thisProperty] The property
@@ -1240,14 +1211,13 @@ function getPropWorldSpeed(t, prop) {
  * @requires isPosition
  */
 function getPropWorldValue(t, prop) {
-	if (typeof prop === "undefined") prop = thisProperty;
-	if (typeof t === "undefined") t = time;
 	if (isPosition(prop)) return getLayerWorldPos(t);
 	return thisLayer.toWorld(prop.valueAtTime(t), t);
 }
 
 /**
- * Gets the world velocity of a property.
+ * Gets the world velocity of a property.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [prop=thisProperty] The property
@@ -1255,7 +1225,6 @@ function getPropWorldValue(t, prop) {
  * @requires getPropWorldValue
  */
 function getPropWorldVelocity(t, prop) {
-	if (typeof t === "undefined") t = time;
 	return (getPropWorldValue(t + 0.005, prop) - getPropWorldValue(t - 0.005, prop)) * 100;
 }
 
@@ -1647,7 +1616,8 @@ Matrix.prototype = {
 
 
 /**
- * Translates a point with a layer, as if it was parented to it.
+ * Translates a point with a layer, as if it was parented to it.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {Layer} l The layer to get the translation from.
  * @param {float[]} [point=[0,0]] The [X,Y] point to translate (using world coordinates).
@@ -1656,8 +1626,6 @@ Matrix.prototype = {
  * @return {float[]} The coordinates of the translated point.
  */
 function translatePointWithLayer( l, point, startT, endT ) {
-    if (typeof startT === "undefined") startT = 0;
-    if (typeof endT === "undefined") endT = time;
     try {
         var pos = l.fromWorld( point, startT );
     } catch ( e ) {

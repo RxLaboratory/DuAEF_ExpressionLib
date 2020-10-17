@@ -1,5 +1,6 @@
 /**
-    * The gaussian function
+    * The gaussian function<br />
+    * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
     * @function
     * @param {Number} value The variable
     * @param {Number} [min=0] The minimum return value
@@ -10,10 +11,6 @@
     */
 function gaussian( value, min, max, center, fwhm)
 {
-    if (typeof max === "undefined") max = 1;
-    if (typeof min === "undefined") min = 0;
-    if (typeof center === "undefined") center = 0;
-    if (typeof fwhm === "undefined") fwhm = 1;
     if (fwhm === 0 && value == center) return max;
     else if (fwhm === 0) return 0;
 

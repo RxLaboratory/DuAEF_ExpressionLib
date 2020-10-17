@@ -441,11 +441,6 @@ return d * (l + d * (m + d * n));
 }
 function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )
 {
-if (typeof value2 === "undefined") value2 = 1;
-if (typeof value1 === "undefined") value1 = 0;
-if (typeof tMin === "undefined") tMin = 0;
-if (typeof tMax === "undefined") tMax = 1;
-if (typeof rate === "undefined") rate = 0;
 if (t != tMin)
 {
 var newValue1 = gaussianInterpolation( tMin, tMin, tMax, value1, value2, rate );
@@ -468,7 +463,6 @@ result = result * (value2-value1) + value1;
 return result;
 }
 function getNextKey(t) {
-if (typeof t === "undefined") t = time;
 if (numKeys == 0) return null;
 var nKey = nearestKey(t);
 if (nKey.time >= t) return nKey;
@@ -476,7 +470,6 @@ if (nKey.index < numKeys) return key(nKey.index + 1);
 return null;
 }
 function getPrevKey(t) {
-if (typeof t === "undefined") t = time;
 if (numKeys == 0) return null;
 var nKey = nearestKey(t);
 if (nKey.time <= t) return nKey;
@@ -490,10 +483,6 @@ return nKey.time <= time && nKey.index == numKeys;
 }
 function gaussian( value, min, max, center, fwhm)
 {
-if (typeof max === "undefined") max = 1;
-if (typeof min === "undefined") min = 0;
-if (typeof center === "undefined") center = 0;
-if (typeof fwhm === "undefined") fwhm = 1;
 if (fwhm === 0 && value == center) return max;
 else if (fwhm === 0) return 0;
 var exp = -4 * Math.LN2;
@@ -504,10 +493,6 @@ return result * (max-min) + min;
 }
 function inverseGaussian ( v, min, max, center, fwhm)
 {
-if (typeof max === "undefined") max = 1;
-if (typeof min === "undefined") min = 0;
-if (typeof center === "undefined") center = 0;
-if (typeof fwhm === "undefined") fwhm = 1;
 if (v == 1) return [center, center];
 if (v === 0) return [center + fwhm/2, center - fwhm/2];
 if (fwhm === 0) return [center, center];
@@ -519,19 +504,11 @@ return [ result + center, -result + center ];
 }
 function inverseLogistic ( v, midValue, min, max, rate)
 {
-if (typeof midValue === "undefined") midValue = 0;
-if (typeof max === "undefined") max = 1;
-if (typeof min === "undefined") min = 0;
-if (typeof rate === "undefined") rate = 1;
 if (v == min) return 0;
 return midValue - Math.log( (max-min)/(v-min) - 1) / rate;
 }
 function logistic( value, midValue, min, max, rate)
 {
-if (typeof midValue === "undefined") midValue = 0;
-if (typeof max === "undefined") max = 1;
-if (typeof min === "undefined") min = 0;
-if (typeof rate === "undefined") rate = 1;
 var exp = -rate*(value - midValue);
 var result = 1 / (1 + Math.pow(Math.E, exp));
 return result * (max-min) + min;
@@ -578,7 +555,6 @@ try { if ( prop.index ) return true; }
 catch (e) { return false; }
 }
 function isPosition(prop) {
-if (typeof prop === "undefined") prop = thisProperty;
 if (!(prop.value instanceof Array)) return false;
 if (prop.value.length > 3) return false;
 if ( prop === transform.position ) return true;
@@ -586,19 +562,12 @@ if ( prop === position ) return true;
 return false;
 }
 function isSpatial(prop) {
-if (typeof prop === "undefined") prop = thisProperty;
 if (!(prop.value instanceof Array)) return false;
 if (prop.value.length != 2 && prop.value.length != 3) return false;
-try {
-sp = prop.speed;
+if (typeof prop.speed === "undefined") return false;
 return true;
-} catch (e) {
-return false;
-}
 }
 function isStill(t, threshold) {
-if (typeof t === "undefined") t = time;
-if (typeof threshold === "undefined") threshold = 0.1;
 var d = valueAtTime(t) - valueAtTime(t + framesToTime(1));
 if (d instanceof Array) {
 for (var i = 0; i < d.length; i++) {
@@ -620,7 +589,6 @@ noiseValue = noiseValue * (quantity / 100);
 return val * ( noiseValue + 1 );
 }
 function dishineritRotation( l ) {
-if (typeof l === "undefined") l = thisLayer;
 var r = l.rotation.value;
 while ( l.hasParent ) {
 l = l.parent;
@@ -630,7 +598,6 @@ r -= l.rotation.value * Math.sign(s[0]*s[1]);
 return r;
 }
 function dishineritScale( l ) {
-if (typeof l === "undefined") l = thisLayer;
 var s = l.scale.value;
 var threeD = s.length == 3;
 while ( l.hasParent ) {
@@ -657,8 +624,6 @@ var matrix = getGroupTransformMatrix().inverse();
 return matrix.applyToPoint( point );
 }
 function getCompScale( l, t ) {
-if (typeof l === "undefined") l = thisLayer;
-if (typeof t === "undefined") t = time;
 var originalWidth = length( l.anchorPoint, [ l.width, 0 ] );
 var anchorInComp = l.toComp( l.anchorPoint, t );
 var widthInComp = l.toComp( [ l.width, 0 ], t );
@@ -666,7 +631,6 @@ var newWidth = length(anchorInComp, widthInComp);
 return newWidth / originalWidth;
 }
 function getGroupTransformMatrix( prop ) {
-if (typeof group === "undefined") prop = thisProperty;
 var matrix = new Matrix();
 var shapeGroups = [];
 var parentProp = prop.propertyGroup(1);
@@ -689,20 +653,15 @@ matrix.scale( group.scale.value / 100 );
 return matrix;
 }
 function getLayerCompPos( t, l ) {
-if (typeof l === "undefined") l = thisLayer;
-if (typeof t === "undefined") t = time;
 return l.toComp( l.anchorPoint, t );
 }
 function getLayerWorldPos(t, l) {
-if (typeof l === "undefined") l = thisLayer;
-if (typeof t === "undefined") t = time;
 return l.toWorld(l.anchorPoint, t);
 }
 function getLayerWorldSpeed(t, l) {
 return length(getWorldVelocity(t, l));
 }
 function getLayerWorldVelocity(t, l) {
-if (typeof t === "undefined") t = time;
 return (getLayerWorldPos(t, l) - getLayerWorldPos(t - 0.01, l)) * 100;
 }
 function getOrientation( l ) {
@@ -721,7 +680,6 @@ r += lr;
 return r;
 }
 function getScaleMirror( l ) {
-if (typeof l === "undefined") l = thisLayer;
 var sign = 1;
 while (l.hasParent) {
 l = l.parent;
@@ -731,7 +689,6 @@ sign *= Math.sign(s[0]*s[1]);
 return sign;
 }
 function getScaleUTurn( l ) {
-if (typeof l === "undefined") l = thisLayer;
 var u = 1;
 while (l.hasParent) {
 l = l.parent;
@@ -742,7 +699,6 @@ if (u < 0) return 180;
 else return 0;
 }
 function getOrientationAtTime( l, t ) {
-if (typeof t === "undefined" ) t = time;
 var r = 0;
 r += l.rotation.valueAtTime( t );
 while ( l.hasParent ) {
@@ -755,13 +711,10 @@ function getPropWorldSpeed(t, prop) {
 return length(getPropWorldVelocity(t, prop));
 }
 function getPropWorldValue(t, prop) {
-if (typeof prop === "undefined") prop = thisProperty;
-if (typeof t === "undefined") t = time;
 if (isPosition(prop)) return getLayerWorldPos(t);
 return thisLayer.toWorld(prop.valueAtTime(t), t);
 }
 function getPropWorldVelocity(t, prop) {
-if (typeof t === "undefined") t = time;
 return (getPropWorldValue(t + 0.005, prop) - getPropWorldValue(t - 0.005, prop)) * 100;
 }
 function getScale( l ) {
@@ -951,8 +904,6 @@ return me
 }
 };
 function translatePointWithLayer( l, point, startT, endT ) {
-if (typeof startT === "undefined") startT = 0;
-if (typeof endT === "undefined") endT = time;
 try {
 var pos = l.fromWorld( point, startT );
 } catch ( e ) {

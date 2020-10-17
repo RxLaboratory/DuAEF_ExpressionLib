@@ -1,6 +1,7 @@
 /**
  * Interpolates a value with a gaussian function.<br />
- * This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} t The value to interpolate
  * @param {number} [tMin=0] The minimum value of the initial range
@@ -12,11 +13,6 @@
  */
 function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )
 {
-    if (typeof value2 === "undefined") value2 = 1;
-    if (typeof value1 === "undefined") value1 = 0;
-    if (typeof tMin === "undefined") tMin = 0;
-    if (typeof tMax === "undefined") tMax = 1;
-    if (typeof rate === "undefined") rate = 0;
     // fix small bump at first value
     if (t != tMin)
     {

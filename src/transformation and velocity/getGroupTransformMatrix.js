@@ -1,5 +1,6 @@
 /**
- * Gets the transformation Matrix for the current group in a shape layer, including the transformation from the ancestor groups
+ * Gets the transformation Matrix for the current group in a shape layer, including the transformation from the ancestor groups<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {Property} [prop=thisProperty] The property from which to get the matrix
  * @return {Matrix} The 2D Transform Matrix.
@@ -7,7 +8,6 @@
  * @requires Matrix
  */
 function getGroupTransformMatrix( prop ) {
-	if (typeof group === "undefined") prop = thisProperty;
     // A Matrix to apply group transforms
     var matrix = new Matrix();
 

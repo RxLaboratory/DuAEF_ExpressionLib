@@ -1,5 +1,6 @@
 /**
-    * The logistic function (sigmoid)
+    * The logistic function (sigmoid)<br />
+    * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
     * @function
     * @param {Number} value The value
     * @param {Number} [midValue=0] The midpoint value, at which the function returns max/2
@@ -10,10 +11,6 @@
     */
 function logistic( value, midValue, min, max, rate)
 {
-    if (typeof midValue === "undefined") midValue = 0;
-    if (typeof max === "undefined") max = 1;
-    if (typeof min === "undefined") min = 0;
-    if (typeof rate === "undefined") rate = 1;
     var exp = -rate*(value - midValue);
     var result = 1 / (1 + Math.pow(Math.E, exp));
     return result * (max-min) + min;

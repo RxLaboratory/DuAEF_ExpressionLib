@@ -21,7 +21,6 @@ function getOrientation( l ) {
 }
 
 function getScaleMirror( l ) {
-    if (typeof l === "undefined") l = thisLayer;
     var sign = 1;
     while (l.hasParent) {
       l = l.parent;
@@ -32,7 +31,6 @@ function getScaleMirror( l ) {
 }
 
 function getScaleUTurn( l ) {
-    if (typeof l === "undefined") l = thisLayer;
     var u = 1;
     while (l.hasParent) {
       l = l.parent;
