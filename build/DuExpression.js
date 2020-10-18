@@ -555,11 +555,7 @@ try { if ( prop.index ) return true; }
 catch (e) { return false; }
 }
 function isPosition(prop) {
-if (!(prop.value instanceof Array)) return false;
-if (prop.value.length > 3) return false;
-if ( prop === transform.position ) return true;
-if ( prop === position ) return true;
-return false;
+return  prop === position;
 }
 function isSpatial(prop) {
 if (!(prop.value instanceof Array)) return false;
@@ -711,7 +707,7 @@ function getPropWorldSpeed(t, prop) {
 return length(getPropWorldVelocity(t, prop));
 }
 function getPropWorldValue(t, prop) {
-if (isPosition(prop)) return getLayerWorldPos(t);
+if (isPosition(prop)) return getLayerWorldPos(t, thisLayer);
 return thisLayer.toWorld(prop.valueAtTime(t), t);
 }
 function getPropWorldVelocity(t, prop) {

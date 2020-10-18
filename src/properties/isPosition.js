@@ -6,5 +6,5 @@
  * @return {boolean} true if the property is the transform.position property.
  */
 function isPosition(prop) {
-	return  prop === transform.position;
+	return  prop === position;
 }

@@ -9,6 +9,6 @@
  * @requires isPosition
  */
 function getPropWorldValue(t, prop) {
-	if (isPosition(prop)) return getLayerWorldPos(t);
+	if (isPosition(prop)) return getLayerWorldPos(t, thisLayer);
 	return thisLayer.toWorld(prop.valueAtTime(t), t);
 }
