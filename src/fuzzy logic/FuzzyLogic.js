@@ -2,9 +2,9 @@
   * Fuzzy Logics for expressions. See {@link https://github.com/Nico-Duduf/DuFuzzyLogic} for more explanations
   * @class
   * @classdesc Fuzzy Logics for expressions. See {@link https://github.com/Nico-Duduf/DuFuzzyLogic} for more explanations
-  * @author Duduf
+  * @author Nicolas "Duduf" Dufresne
   * @license GPL-v3
-  * @copyright Duduf 2020
+  * @copyright 2020-2021 Nicolas Dufresne and contributors
   * @requires logistic
   * @requires inverseLogistic
   * @requires gaussian

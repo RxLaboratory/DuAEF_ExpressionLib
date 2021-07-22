@@ -2,9 +2,9 @@
   * Fuzzy Logics for expressions. See {@link https://github.com/Nico-Duduf/DuFuzzyLogic} for more explanations
   * @class
   * @classdesc Fuzzy Logics for expressions. See {@link https://github.com/Nico-Duduf/DuFuzzyLogic} for more explanations
-  * @author Duduf
+  * @author Nicolas "Duduf" Dufresne
   * @license GPL-v3
-  * @copyright Duduf 2020
+  * @copyright 2020-2021 Nicolas Dufresne and contributors
   * @requires logistic
   * @requires inverseLogistic
   * @requires gaussian
@@ -714,6 +714,7 @@ function inverseGaussian ( v, min, max, center, fwhm)
 /**
     * The inverse logistic function (inverse sigmoid)<br />
     * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.    * @function
+    * @function
     * @param {Number} v The variable
     * @param {Number} [midValue=0] The midpoint value, at which the function returns max/2 in the original logistic function
     * @param {Number} [min=0] The minimum return value of the original logistic function
@@ -860,6 +861,7 @@ function isPosition(prop) {
 
 /**
  * Checks if a property is spatial
+ * @function
  * @param {Property} prop The property to check
  * @return {boolean} true if the property is spatial.
  */
@@ -1630,5 +1632,4 @@ function translatePointWithLayer( l, point, startT, endT ) {
     var newPos = l.toWorld( pos, endT );
     return newPos - prevPos;
 }
-
 

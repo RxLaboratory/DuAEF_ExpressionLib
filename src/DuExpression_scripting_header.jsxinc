@@ -24,12 +24,13 @@
     It is also available in DuAEF, along with some useful functions to help you include requirements when adding a function to your expressions.
 */
 
-if (typeof DuAEF === "undefined") DuAEF = {};
-if (typeof DuAEF.DuExpression === "undefined") DuAEF.DuExpression = {};
+if (typeof DuAEExpression === "undefined") DuAEExpression = {};
 
 /**
-* Expression Library
+* Expression Library<br />
+* Using DuAEF, you can easily include the methods and classes listed here to your expressions,<br />
+* using {@link DuAEExpression.Library.get} and {@link DuAEExpression.Library.getRequirements}. These methods take the name of the function/class as arguments.
 * @namespace
 * @memberof DuAEF.DuExpression
 */
-DuAEF.DuExpression.Library = [];
+if (typeof DuAEExpression.Library === "undefined") DuAEExpression.Library = [];

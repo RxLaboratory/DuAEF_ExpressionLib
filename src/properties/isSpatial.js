@@ -1,5 +1,6 @@
 /**
  * Checks if a property is spatial
+ * @function
  * @param {Property} prop The property to check
  * @return {boolean} true if the property is spatial.
  */
