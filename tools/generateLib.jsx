@@ -65,7 +65,8 @@
             {
                 getExpresssions( file );
                 continue;
-            } 
+            }
+            file.encoding = 'UTF-8';
             var name = file.name.substring(0, file.name.length - 3);
             file.open('r');
             var fileContent = file.read();
@@ -106,6 +107,12 @@
     var js = new File(repoFolder.absoluteURI + "/build/DuExpression.js");
     var jsFull = new File(repoFolder.absoluteURI + "/build/DuExpression_full.js");
     var text = new File(repoFolder.absoluteURI + "/build/DuExpression_sourceText.js");
+
+    jsxinc.encoding = 'UTF-8';
+    js.encoding = 'UTF-8';
+    jsFull.encoding = 'UTF-8';
+    text.encoding = 'UTF-8';
+    
     if (jsxinc.open('w'))
     {
         jsxinc.write(jsxincContent);

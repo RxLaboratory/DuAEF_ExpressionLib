@@ -1,7 +1,7 @@
 /* License
-	DuAEF_DuExpressionLib
+	DuExpression Library
 
-	Copyright (c) 2020 Nicolas Dufresne, Rainbox Laboratory
+	Copyright (c) 2020-2021 Nicolas Dufresne and contributors
 
 	This file is part of DuExpression - The Duduf Expression Library.
 
@@ -31,6 +31,7 @@ if (typeof DuAEExpression === "undefined") DuAEExpression = {};
 * Using DuAEF, you can easily include the methods and classes listed here to your expressions,<br />
 * using {@link DuAEExpression.Library.get} and {@link DuAEExpression.Library.getRequirements}. These methods take the name of the function/class as arguments.
 * @namespace
-* @memberof DuAEF.DuExpression
+* @name Library
+* @memberof DuAEExpression
 */
 if (typeof DuAEExpression.Library === "undefined") DuAEExpression.Library = [];

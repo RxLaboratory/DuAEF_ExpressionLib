@@ -544,14 +544,14 @@ function createQuantifier( q )
 
 /**
  * Interpolates a value with a bezier curve.<br />
- * This method can replace <code>linear()</code> and <code>ease()</code> with a custom b�zier interpolation.
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a custom bézier interpolation.
  * @function
  * @param {number} t The value to interpolate
  * @param {number} [tMin=0] The minimum value of the initial range
  * @param {number} [tMax=1] The maximum value of the initial range
  * @param {number} [value1=0] The minimum value of the interpolated result
  * @param {number} [value2=1] The maximum value of the interpolated result
- * @param {number[]} [bezierPoints=[0.33,0.0,0.66,1.0]] an Array of 4 coordinates wihtin the [0.0, 1.0] range which describes the B�zier interpolation. The default mimics the native ease() function<br />
+ * @param {number[]} [bezierPoints=[0.33,0.0,0.66,1.0]] an Array of 4 coordinates wihtin the [0.0, 1.0] range which describes the Bézier interpolation. The default mimics the native ease() function<br />
  * [ outTangentX, outTangentY, inTangentX, inTangentY ]
  * @return {number} the value.
  */
