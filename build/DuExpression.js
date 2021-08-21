@@ -462,24 +462,51 @@ var result = Math.pow(Math.E, exp);
 result = result * (value2-value1) + value1;
 return result;
 }
-function getNextKey(t) {
-if (numKeys == 0) return null;
-var nKey = nearestKey(t);
+function getNextKey(t, prop) {
+if (prop.numKeys == 0) return null;
+var nKey = prop.nearestKey(t);
 if (nKey.time >= t) return nKey;
-if (nKey.index < numKeys) return key(nKey.index + 1);
+if (nKey.index < prop.numKeys) return prop.key(nKey.index + 1);
 return null;
 }
-function getPrevKey(t) {
-if (numKeys == 0) return null;
-var nKey = nearestKey(t);
+function getPrevKey(t, prop) {
+if (prop.numKeys == 0) return null;
+var nKey = prop.nearestKey(t);
 if (nKey.time <= t) return nKey;
-if (nKey.index > 1) return key(nKey.index - 1);
+if (nKey.index > 1) return prop.key(nKey.index - 1);
 return null;
 }
 function isAfterLastKey() {
 if (numKeys == 0) return false;
 var nKey = nearestKey(time);
 return nKey.time <= time && nKey.index == numKeys;
+}
+function addPath(path1, path2, path2weight) {
+var vertices = addPoints(path1.points, path2.points, path2weight);
+var inT = addPoints(path1.inTangents, path2.inTangents, path2weight);
+var outT = addPoints(path1.outTangents, path2.outTangents, path2weight);
+var path = {};
+path.points = vertices;
+path.inTangents = inT;
+path.outTangents = outT;
+return path;
+}
+function addPoints(p1, p2, w) {
+var n = p1.length;
+if (p2.length > n) n = p2.length;
+var r = [];
+for (var i = 0; i < n; i++) {
+if (i >= p1.length) {
+r.push(p2[i] * w);
+continue;
+}
+if (i >= p2.length) {
+r.push(p1[i]);
+continue;
+}
+r.push(p1[i] + p2[i] * w);
+}
+return r;
 }
 function gaussian( value, min, max, center, fwhm)
 {
@@ -523,7 +550,61 @@ result += values[i];
 }
 return result / num;
 }
+function multPoints(p, w) {
+var r = [];
+for (var i = 0, n = p.length; i < n; i++) {
+r.push(p[i] * w);
+}
+return r;
+}
+function normalizeWeights(weights, sum) {
+if (sum == 1 || sum == 0) return weights;
+var o = 1 - sum;
+var normalized = [];
+for (var i = 0, n = weights.length; i < n; i++) {
+var w = weights[i];
+normalized.push(w + (w / sum) * o);
+}
+return normalized;
+}
 if (typeof Math.sign === 'undefined') Math.sign = function(x) { return ((x > 0) - (x < 0)) || +x; };
+function multPath(path, weight) {
+var vertices = multPoints(path.points, weight);
+var inT = multPoints(path.inTangents, weight);
+var outT = multPoints(path.outTangents, weight);
+var path = {};
+path.points = vertices;
+path.inTangents = inT;
+path.outTangents = outT;
+return path;
+}
+function subPath(path1, path2, path2weight) {
+var vertices = subPoints(path1.points, path2.points, path2weight);
+var inT = subPoints(path1.inTangents, path2.inTangents, path2weight);
+var outT = subPoints(path1.outTangents, path2.outTangents, path2weight);
+var path = {};
+path.points = vertices;
+path.inTangents = inT;
+path.outTangents = outT;
+return path;
+}
+function subPoints(p1, p2, w) {
+var n = p1.length;
+if (p2.length > n) n = p2.length;
+var r = [];
+for (var i = 0; i < n; i++) {
+if (i >= p1.length) {
+r.push(-p2[i] * w);
+continue;
+}
+if (i >= p2.length) {
+r.push(p1[i]);
+continue;
+}
+r.push(p1[i] - p2[i] * w);
+}
+return r;
+}ç
 function checkDuikEffect(fx, duikMatchName) {
 if (fx.numProperties  < 3) return false;
 if (!!$.engineName) {
@@ -550,9 +631,26 @@ function getEffectLayer( fx, ind ) {
 try { var l = fx( ind ); return l; }
 catch ( e ) { return null; }
 }
+function getPath(t) {
+var path = {};
+path.points = points(t);
+path.inTangents = inTangents(t);
+path.outTangents = outTangents(t);
+return path;
+}
 function isLayer( prop ) {
 try { if ( prop.index ) return true; }
 catch (e) { return false; }
+}
+function isPath(prop) {
+if (typeof prop !== 'object') return false;
+if (prop instanceof Array) return false;
+try {
+createPath();
+return true;
+} catch (e) {
+return false;
+}
 }
 function isPosition(prop) {
 return  prop === position;
@@ -576,6 +674,35 @@ return true;
 } else {
 d = Math.abs(d);
 return d < threshold;
+}
+}
+function zero() {
+if (typeof thisProperty.value === "number") return 0;
+if (thisProperty.value instanceof Array) {
+var result = [0];
+for (var i = 1, n = value.length; i < n; i++) result.push(0);
+return result;
+}
+if (isPath(thisProperty)) {
+var path = {};
+var vertices = [
+[0, 0]
+];
+var inT = [
+[0, 0]
+];
+var outT = [
+[0, 0]
+];
+for (var i = 1, n = points(0).length; i < n; i++) {
+vertices.push([0, 0]);
+inT.push([0, 0]);
+outT.push([0, 0]);
+}
+path.points = vertices;
+path.inTangents = inT;
+path.outTangents = outT;
+return path;
 }
 }
 function addNoise( val, quantity ) {

@@ -622,35 +622,34 @@ function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )
 }
 
 /**
- * Gets the key immediately after the given time<br />
- * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * Gets the key immediately before the given time
  * @function
- * @param {number} [t=time] Time at which to get the key
+ * @param {number} t Time at which to get the key
+ * @param {Property} prop The property from which to get the key
  * @return {Key|null} The key, or null if there's no key before.
  */
-function getNextKey(t) {
-    if (numKeys == 0) return null;
-    var nKey = nearestKey(t);
+function getNextKey(t, prop) {
+    if (prop.numKeys == 0) return null;
+    var nKey = prop.nearestKey(t);
     if (nKey.time >= t) return nKey;
-    if (nKey.index < numKeys) return key(nKey.index + 1);
+    if (nKey.index < prop.numKeys) return prop.key(nKey.index + 1);
     return null;
-  }
-  
+}
 
 /**
- * Gets the key immediately before the given time<br />
- * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * Gets the key immediately before the given time
  * @function
- * @param {number} [t=time] Time at which to get the key
+ * @param {number} t Time at which to get the key
+ * @param {Property} prop The property from which to get the key
  * @return {Key|null} The key, or null if there's no key before.
  */
-function getPrevKey(t) {
-    if (numKeys == 0) return null;
-    var nKey = nearestKey(t);
+function getPrevKey(t, prop) {
+    if (prop.numKeys == 0) return null;
+    var nKey = prop.nearestKey(t);
     if (nKey.time <= t) return nKey;
-    if (nKey.index > 1) return key(nKey.index - 1);
+    if (nKey.index > 1) return prop.key(nKey.index - 1);
     return null;
-  }
+}
 
 /**
  * Checks if current time is after the time of the last key in the property
@@ -663,6 +662,53 @@ function isAfterLastKey() {
 	return nKey.time <= time && nKey.index == numKeys;
 }
 
+
+/**
+ * Adds two paths together.<br />
+ * The paths must be objects with three array attributes: points, inTangents, outTangents
+ * @function
+ * @param {Object} path1 First path
+ * @param {Object} path2 Second path
+ * @param {float} path2weight A weight to multiply the second path values
+ * @returns {Object} A path object with three array attributes: points, inTangents, outTangents
+ * @requires addPoints
+ */
+function addPath(path1, path2, path2weight) {
+    var vertices = addPoints(path1.points, path2.points, path2weight);
+    var inT = addPoints(path1.inTangents, path2.inTangents, path2weight);
+    var outT = addPoints(path1.outTangents, path2.outTangents, path2weight);
+    var path = {};
+    path.points = vertices;
+    path.inTangents = inT;
+    path.outTangents = outT;
+    return path;
+}
+
+/**
+ * Adds two lists of points/vectors.
+ * @function
+ * @param {float[][]} p1 The list of points
+ * @param {float[][]} p2 The other list of points
+ * @param {float} w A weight to multiply the values of p2
+ * @returns {float[][]} The added points
+ */
+function addPoints(p1, p2, w) {
+    var n = p1.length;
+    if (p2.length > n) n = p2.length;
+    var r = [];
+    for (var i = 0; i < n; i++) {
+        if (i >= p1.length) {
+            r.push(p2[i] * w);
+            continue;
+        }
+        if (i >= p2.length) {
+            r.push(p1[i]);
+            continue;
+        }
+        r.push(p1[i] + p2[i] * w);
+    }
+    return r;
+}
 
 /**
     * The gaussian function<br />
@@ -765,6 +811,39 @@ function mean( values )
 }
 
 /**
+ * Multiplies a list of points/vectors with a scalar.
+ * @function
+ * @param {float[][]} p The list of points
+ * @param {float} w The multiplier
+ * @returns {float[][]} The multiplied points
+ */
+function multPoints(p, w) {
+    var r = [];
+    for (var i = 0, n = p.length; i < n; i++) {
+        r.push(p[i] * w);
+    }
+    return r;
+}
+
+/**
+ * Normalizes a list of weights so their sum equals 1.0
+ * @function
+ * @param {float[]} weights The weights to normalize
+ * @param {float} sum The sum of the weights
+ * @returns {float[]} The normalized weights
+ */
+function normalizeWeights(weights, sum) {
+    if (sum == 1 || sum == 0) return weights;
+    var o = 1 - sum;
+    var normalized = [];
+    for (var i = 0, n = weights.length; i < n; i++) {
+        var w = weights[i];
+        normalized.push(w + (w / sum) * o);
+    }
+    return normalized;
+}
+
+/**
     * Fix for the ExtendScript engine, implements the Math.sign function.
     * @function
     * @name Math.sign
@@ -772,6 +851,73 @@ function mean( values )
     * @return {Number} The sign, 1, -1 or 0.
     */
 if (typeof Math.sign === 'undefined') Math.sign = function(x) { return ((x > 0) - (x < 0)) || +x; };
+
+/**
+ * Multiplies a path with a scalar.<br />
+ * The path must be an object with three array attributes: points, inTangents, outTangents
+ * @function
+ * @param {Object} path The path
+ * @param {float} weight The multipliers
+ * @returns {Object} A path object with three array attributes: points, inTangents, outTangents
+ * @requires multPoints
+ */
+function multPath(path, weight) {
+    var vertices = multPoints(path.points, weight);
+    var inT = multPoints(path.inTangents, weight);
+    var outT = multPoints(path.outTangents, weight);
+    var path = {};
+    path.points = vertices;
+    path.inTangents = inT;
+    path.outTangents = outT;
+    return path;
+}
+
+/**
+ * Substracts two paths together.<br />
+ * The paths must be objects with three array attributes: points, inTangents, outTangents
+ * @function
+ * @param {Object} path1 First path
+ * @param {Object} path2 Second path
+ * @param {float} path2weight A weight to multiply the second path values
+ * @returns {Object} A path object with three array attributes: points, inTangents, outTangents
+ * @requires subPoints
+ */
+function subPath(path1, path2, path2weight) {
+    var vertices = subPoints(path1.points, path2.points, path2weight);
+    var inT = subPoints(path1.inTangents, path2.inTangents, path2weight);
+    var outT = subPoints(path1.outTangents, path2.outTangents, path2weight);
+    var path = {};
+    path.points = vertices;
+    path.inTangents = inT;
+    path.outTangents = outT;
+    return path;
+}
+
+/**
+ * Substracts two lists of points/vectors.
+ * @function
+ * @param {float[][]} p1 The list of points
+ * @param {float[][]} p2 The other list of points
+ * @param {float} w A weight to multiply the values of p2
+ * @returns {float[][]} The substracted points
+ */
+function subPoints(p1, p2, w) {
+    var n = p1.length;
+    if (p2.length > n) n = p2.length;
+    var r = [];
+    for (var i = 0; i < n; i++) {
+        if (i >= p1.length) {
+            r.push(-p2[i] * w);
+            continue;
+        }
+        if (i >= p2.length) {
+            r.push(p1[i]);
+            continue;
+        }
+        r.push(p1[i] - p2[i] * w);
+    }
+    return r;
+}ç
 
 /**
  * Checks the type of a pseudo-effect used by Duik.<br />
@@ -837,6 +983,19 @@ function getEffectLayer( fx, ind ) {
 }
 
 /**
+ * Gets the path from the current property at a given time.
+ * @function
+ * @return {Object} A path object with three array attributes: points, inTangents, outTangents
+ */
+function getPath(t) {
+    var path = {};
+    path.points = points(t);
+    path.inTangents = inTangents(t);
+    path.outTangents = outTangents(t);
+    return path;
+}
+
+/**
  * Checks if a property is a layer. Useful when traversing up the property tree to stop when getting the layer.
  * @function
  * @param {Property} prop - The property to test
@@ -846,6 +1005,23 @@ function isLayer( prop ) {
 	//try catch is needed for the legacy expression engine
 	try { if ( prop.index ) return true; }
 	catch (e) { return false; }
+}
+
+/**
+ * Checks if a property is a path property.
+ * @function
+ * @param {Property} prop The property
+ * @return {boolean} true if the property is a path property.
+ */
+function isPath(prop) {
+    if (typeof prop !== 'object') return false;
+    if (prop instanceof Array) return false;
+    try {
+        createPath();
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
 
 /**
@@ -895,6 +1071,45 @@ function isStill(t, threshold) {
 		d = Math.abs(d);
 		return d < threshold;
 	}
+}
+
+/**
+ * Generates a "zero" value for the current property, i.e. <code>0</code> or <code>[0,0]</code>, etc. according to the property type.<br />
+ * Note that for path properties, this method returns a path object with three array attributes: points, inTangents, outTangents.
+ * @function
+ * @return {any} The zero value.
+ */
+function zero() {
+    // Single value
+    if (typeof thisProperty.value === "number") return 0;
+    // Array (spatial, colors, etc)
+    if (thisProperty.value instanceof Array) {
+        var result = [0];
+        for (var i = 1, n = value.length; i < n; i++) result.push(0);
+        return result;
+    }
+    // Path
+    if (isPath(thisProperty)) {
+        var path = {};
+        var vertices = [
+            [0, 0]
+        ];
+        var inT = [
+            [0, 0]
+        ];
+        var outT = [
+            [0, 0]
+        ];
+        for (var i = 1, n = points(0).length; i < n; i++) {
+            vertices.push([0, 0]);
+            inT.push([0, 0]);
+            outT.push([0, 0]);
+        }
+        path.points = vertices;
+        path.inTangents = inT;
+        path.outTangents = outT;
+        return path;
+    }
 }
 
 /**
@@ -1632,4 +1847,5 @@ function translatePointWithLayer( l, point, startT, endT ) {
     var newPos = l.toWorld( pos, endT );
     return newPos - prevPos;
 }
+
 

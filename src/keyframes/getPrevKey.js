@@ -1,14 +1,14 @@
 /**
- * Gets the key immediately before the given time<br />
- * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * Gets the key immediately before the given time
  * @function
- * @param {number} [t=time] Time at which to get the key
+ * @param {number} t Time at which to get the key
+ * @param {Property} prop The property from which to get the key
  * @return {Key|null} The key, or null if there's no key before.
  */
-function getPrevKey(t) {
-    if (numKeys == 0) return null;
-    var nKey = nearestKey(t);
+function getPrevKey(t, prop) {
+    if (prop.numKeys == 0) return null;
+    var nKey = prop.nearestKey(t);
     if (nKey.time <= t) return nKey;
-    if (nKey.index > 1) return key(nKey.index - 1);
+    if (nKey.index > 1) return prop.key(nKey.index - 1);
     return null;
-  }
+}
