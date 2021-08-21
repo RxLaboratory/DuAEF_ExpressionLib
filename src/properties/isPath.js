@@ -5,8 +5,6 @@
  * @return {boolean} true if the property is a path property.
  */
 function isPath(prop) {
-    if (typeof prop !== 'object') return false;
-    if (prop instanceof Array) return false;
     try {
         createPath();
         return true;

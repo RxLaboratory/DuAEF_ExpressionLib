@@ -481,16 +481,6 @@ if (numKeys == 0) return false;
 var nKey = nearestKey(time);
 return nKey.time <= time && nKey.index == numKeys;
 }
-function addPath(path1, path2, path2weight) {
-var vertices = addPoints(path1.points, path2.points, path2weight);
-var inT = addPoints(path1.inTangents, path2.inTangents, path2weight);
-var outT = addPoints(path1.outTangents, path2.outTangents, path2weight);
-var path = {};
-path.points = vertices;
-path.inTangents = inT;
-path.outTangents = outT;
-return path;
-}
 function addPoints(p1, p2, w) {
 var n = p1.length;
 if (p2.length > n) n = p2.length;
@@ -568,6 +558,33 @@ normalized.push(w + (w / sum) * o);
 return normalized;
 }
 if (typeof Math.sign === 'undefined') Math.sign = function(x) { return ((x > 0) - (x < 0)) || +x; };
+function subPoints(p1, p2, w) {
+var n = p1.length;
+if (p2.length > n) n = p2.length;
+var r = [];
+for (var i = 0; i < n; i++) {
+if (i >= p1.length) {
+r.push(-p2[i] * w);
+continue;
+}
+if (i >= p2.length) {
+r.push(p1[i]);
+continue;
+}
+r.push(p1[i] - p2[i] * w);
+}
+return r;
+}
+function addPath(path1, path2, path2weight) {
+var vertices = addPoints(path1.points, path2.points, path2weight);
+var inT = addPoints(path1.inTangents, path2.inTangents, path2weight);
+var outT = addPoints(path1.outTangents, path2.outTangents, path2weight);
+var path = {};
+path.points = vertices;
+path.inTangents = inT;
+path.outTangents = outT;
+return path;
+}
 function multPath(path, weight) {
 var vertices = multPoints(path.points, weight);
 var inT = multPoints(path.inTangents, weight);
@@ -588,23 +605,6 @@ path.inTangents = inT;
 path.outTangents = outT;
 return path;
 }
-function subPoints(p1, p2, w) {
-var n = p1.length;
-if (p2.length > n) n = p2.length;
-var r = [];
-for (var i = 0; i < n; i++) {
-if (i >= p1.length) {
-r.push(-p2[i] * w);
-continue;
-}
-if (i >= p2.length) {
-r.push(p1[i]);
-continue;
-}
-r.push(p1[i] - p2[i] * w);
-}
-return r;
-}ç
 function checkDuikEffect(fx, duikMatchName) {
 if (fx.numProperties  < 3) return false;
 if (!!$.engineName) {
@@ -643,8 +643,6 @@ try { if ( prop.index ) return true; }
 catch (e) { return false; }
 }
 function isPath(prop) {
-if (typeof prop !== 'object') return false;
-if (prop instanceof Array) return false;
 try {
 createPath();
 return true;

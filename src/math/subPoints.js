@@ -22,4 +22,4 @@ function subPoints(p1, p2, w) {
         r.push(p1[i] - p2[i] * w);
     }
     return r;
-}ç
+}
