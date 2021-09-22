@@ -638,6 +638,32 @@ path.inTangents = inTangents(t);
 path.outTangents = outTangents(t);
 return path;
 }
+function getPropFromPath( l, p )
+{
+prop = l;
+for ( var i = p.length - 1; i >= 0; i-- )
+prop = prop(p[i]);
+return prop;
+}
+function getPropPath()
+{
+var path = [];
+var prop = thisProperty;
+ok = true;
+while( ok )
+{
+try {
+path.push( prop.propertyIndex );
+prop = prop.propertyGroup();
+}
+catch (e) { ok = false; }
+}
+return path;
+}
+function getSameProp( l )
+{
+return getPropFromPath( l, getPropPath() );
+}
 function isLayer( prop ) {
 try { if ( prop.index ) return true; }
 catch (e) { return false; }

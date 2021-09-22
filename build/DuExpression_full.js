@@ -1014,8 +1014,6 @@ function isLayer( prop ) {
  * @return {boolean} true if the property is a path property.
  */
 function isPath(prop) {
-    if (typeof prop !== 'object') return false;
-    if (prop instanceof Array) return false;
     try {
         createPath();
         return true;
@@ -1071,6 +1069,55 @@ function isStill(t, threshold) {
 		d = Math.abs(d);
 		return d < threshold;
 	}
+}
+
+/**
+ * Gets an array of all indices needed to get the current property from the layer level.
+ * @function
+ * @return {int[]} All indices to the property.
+ */
+function getPropPath()
+{
+	var path = [];
+	var prop = thisProperty;
+	ok = true;
+	while( ok )
+	{	
+		try {
+			path.push( prop.propertyIndex );
+			prop = prop.propertyGroup();
+		}
+		catch (e) { ok = false; }
+	}
+	return path;
+}
+
+/**
+ * Gets a property from an array of indices as returned by getPropPath.
+ * @function
+ * @param {Layer} l The layer containing the needed property
+ * @param {int[]} p The indices to the property.
+ * @return {Property} The property.
+ */
+function getPropFromPath( l, p )
+{
+	prop = l;
+	for ( var i = p.length - 1; i >= 0; i-- )
+		prop = prop(p[i]);
+	return prop;
+}
+
+/**
+ * Gets the same property as the current one but from another layer.
+ * @function
+ * @param {Layer} l The layer containing the needed property
+ * @return {Property} The property.
+ * @requires getPropFromPath
+ * @requires getPropPath
+ */
+function getSameProp( l )
+{
+	return getPropFromPath( l, getPropPath() );
 }
 
 /**
@@ -1344,6 +1391,7 @@ function getLayerWorldVelocity(t, l) {
  * @function
  * @param {Layer} l The layer to get the orientation from
  * @return {float} The orientation, in degrees.
+ * @requires sign
  */
 function getOrientation( l ) {
     var sign = getScaleMirror( l );
@@ -2844,6 +2892,55 @@ function getPath(t) {
     path.inTangents = inTangents(t);
     path.outTangents = outTangents(t);
     return path;
+}
+
+/**
+ * Gets a property from an array of indices as returned by getPropPath.
+ * @function
+ * @param {Layer} l The layer containing the needed property
+ * @param {int[]} p The indices to the property.
+ * @return {Property} The property.
+ */
+function getPropFromPath( l, p )
+{
+	prop = l;
+	for ( var i = p.length - 1; i >= 0; i-- )
+		prop = prop(p[i]);
+	return prop;
+}
+
+/**
+ * Gets an array of all indices needed to get the current property from the layer level.
+ * @function
+ * @return {int[]} All indices to the property.
+ */
+function getPropPath()
+{
+	var path = [];
+	var prop = thisProperty;
+	ok = true;
+	while( ok )
+	{	
+		try {
+			path.push( prop.propertyIndex );
+			prop = prop.propertyGroup();
+		}
+		catch (e) { ok = false; }
+	}
+	return path;
+}
+
+/**
+ * Gets the same property as the current one but from another layer.
+ * @function
+ * @param {Layer} l The layer containing the needed property
+ * @return {Property} The property.
+ * @requires getPropFromPath
+ * @requires getPropPath
+ */
+function getSameProp( l )
+{
+	return getPropFromPath( l, getPropPath() );
 }
 
 /**
