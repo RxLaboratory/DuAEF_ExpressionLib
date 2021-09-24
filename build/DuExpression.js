@@ -481,6 +481,110 @@ if (numKeys == 0) return false;
 var nKey = nearestKey(time);
 return nKey.time <= time && nKey.index == numKeys;
 }
+function continueIn( t ) {
+if (numKeys <= 1) return value;
+var firstKey = key(1);
+if ( t >= firstKey.time) return value;
+var firstVelocity = velocityAtTime( firstKey.time + 0.001 );
+var timeSpent = firstKey.time - t;
+return firstKey.value - timeSpent * firstVelocity;
+}
+function continueOut( t ) {
+if (numKeys <= 1) return value;
+var lastKey = key(numKeys);
+if (t <= lastKey.time) return value;
+var lastVelocity = velocityAtTime( lastKey.time - 0.001 );
+var timeSpent = t - lastKey.time;
+return lastKey.value + timeSpent * lastVelocity;
+}
+function cycleIn( t, nK, o ) {
+if (numKeys <= 1) return value;
+var lastKeyIndex = numKeys;
+if (nK >= 2)
+{
+nK = nK - 1;
+lastKeyIndex = 1 + nK;
+if (lastKeyIndex > numKeys) lastKeyIndex = numKeys;
+}
+var loopStartTime = key( 1 ).time;
+var loopEndTime = key( lastKeyIndex ).time;
+var loopDuration = loopEndTime - loopStartTime;
+if (t >= loopStartTime) return value;
+var timeSpent = loopStartTime - t;
+var numLoops = Math.floor( timeSpent / loopDuration );
+var loopTime = loopDuration - timeSpent;
+if (numLoops > 0) loopTime = loopDuration - ( timeSpent - numLoops * loopDuration );
+var r = valueAtTime( loopStartTime + loopTime );
+if (o) r -= ( key( lastKeyIndex ).value - key( 1 ).value ) * ( numLoops + 1 );
+return r;
+}
+function cycleOut( t, nK, o ) {
+if (numKeys <= 1) return value;
+var firstKeyIndex = 1;
+if (nK >= 2)
+{
+nK = nK - 1;
+firstKeyIndex = numKeys - nK;
+if (firstKeyIndex < 1) firstKeyIndex = 1;
+}
+var loopStartTime = key( firstKeyIndex ).time;
+var loopEndTime = key( numKeys ).time;
+var loopDuration = loopEndTime - loopStartTime;
+if (t <= loopEndTime) return value;
+var timeSpent = t - loopEndTime;
+var numLoops = Math.floor( timeSpent / loopDuration );
+var loopTime = timeSpent;
+if (numLoops > 0) loopTime = timeSpent - numLoops * loopDuration;
+var r = valueAtTime( loopStartTime + loopTime );
+if (o) r += ( key( numKeys ).value - key( firstKeyIndex ).value ) * ( numLoops + 1 );
+return r;
+}
+function pingPongIn( t, nK ) {
+if (numKeys <= 1) return value;
+var lasttKeyIndex = numKeys;
+if (nK >= 2)
+{
+nK = nK - 1;
+lasttKeyIndex = 1 + nK;
+if (lasttKeyIndex > numKeys) lasttKeyIndex = numKeys;
+}
+var loopStartTime = key( 1 ).time;
+var loopEndTime = key( lasttKeyIndex ).time;
+var loopDuration = loopEndTime - loopStartTime;
+if (t >= loopStartTime) return value;
+var timeSpent = loopStartTime - t;
+var numLoops = Math.floor( timeSpent / loopDuration );
+var loopTime = timeSpent;
+if (numLoops > 0)
+{
+loopTime = timeSpent - numLoops * loopDuration;
+if (numLoops % 2 != 0) loopTime = loopDuration - loopTime;
+}
+return valueAtTime( loopStartTime + loopTime );
+}
+function pingPongOut( t, nK ) {
+if (numKeys <= 1) return value;
+var firstKeyIndex = 1;
+if (nK >= 2)
+{
+nK = nK - 1;
+firstKeyIndex = numKeys - nK;
+if (firstKeyIndex < 1) firstKeyIndex = 1;
+}
+var loopStartTime = key( firstKeyIndex ).time;
+var loopEndTime = key( numKeys ).time;
+var loopDuration = loopEndTime - loopStartTime;
+if (t <= loopEndTime) return value;
+var timeSpent = t - loopEndTime;
+var numLoops = Math.floor( timeSpent / loopDuration );
+var loopTime = loopDuration - timeSpent;
+if (numLoops > 0)
+{
+loopTime = timeSpent - numLoops * loopDuration;
+if (numLoops % 2 == 0) loopTime = loopDuration - loopTime;
+}
+return valueAtTime( loopStartTime + loopTime );
+}
 function addPoints(p1, p2, w) {
 var n = p1.length;
 if (p2.length > n) n = p2.length;
@@ -699,6 +803,29 @@ return true;
 d = Math.abs(d);
 return d < threshold;
 }
+}
+function lastActiveTime( prop, t ) {
+if ( prop.valueAtTime(t) ) return t;
+while( t > 0 )
+{
+var prevKey = getPrevKey( t, prop );
+if ( !prevKey ) break;
+if ( prevKey.value ) return t;
+t = prevKey.time - .001;
+}
+return 0;
+}
+function nextActiveTime( prop, t )
+{
+if ( prop.valueAtTime(t) ) return t;
+while( t < thisComp.duration )
+{
+var nextKey = getNextKey( t + .001, prop );
+if ( !nextKey ) break;
+t = nextKey.time;
+if ( nextKey.value ) return t;
+}
+return 0;
 }
 function zero() {
 if (typeof thisProperty.value === "number") return 0;
