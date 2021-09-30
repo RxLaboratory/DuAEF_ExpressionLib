@@ -628,6 +628,18 @@ function inverseLogistic ( v, midValue, min, max, rate)
 if (v == min) return 0;
 return midValue - Math.log( (max-min)/(v-min) - 1) / rate;
 }
+function isZero(a)
+{
+if (a.length)
+{
+for ( var i = 0; i < a.length; i++ )
+{
+if ( a[i] != 0 ) return false;
+}
+}
+else if (a != 0) return false;
+return true;
+}
 function logistic( value, midValue, min, max, rate)
 {
 var exp = -rate*(value - midValue);
