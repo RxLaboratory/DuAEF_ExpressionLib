@@ -589,14 +589,14 @@ DuAEExpression.Library["gaussianInterpolation"].requirements = [];
  * @param {number} [value2=1] The maximum value of the interpolated result
  * @return {number} the value.
  */
-DuAEExpression.Library["linearExtrapolations"] = {};
-DuAEExpression.Library["linearExtrapolations"].expression = ['function linearExtrapolation( t, tMin, tMax, value1, value2 )',
+DuAEExpression.Library["linearExtrapolation"] = {};
+DuAEExpression.Library["linearExtrapolation"].expression = ['function linearExtrapolation( t, tMin, tMax, value1, value2 )',
 	'{',
 	'if (tMax == tMin) return (value1+value2) / 2;',
 	'return value1 + (( t - tMin) / (tMax - tMin)) * (value2 - value1);',
 	'}'
 	].join('\n');
-DuAEExpression.Library["linearExtrapolations"].requirements = [];
+DuAEExpression.Library["linearExtrapolation"].requirements = [];
 
 /**
  * Interpolates a value with a logarithmic function.<br />
