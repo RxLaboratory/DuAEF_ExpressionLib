@@ -1013,15 +1013,15 @@ DuAEExpression.Library["isZero"].requirements = [];
     * @param {Number} [rate=1] The logistic growth rate or steepness of the function
     * @return {Number} The result in the range [min, max] (excluding min and max)
     */
-DuAEExpression.Library["logisitic"] = {};
-DuAEExpression.Library["logisitic"].expression = ['function logistic( value, midValue, min, max, rate)',
+DuAEExpression.Library["logistic"] = {};
+DuAEExpression.Library["logistic"].expression = ['function logistic( value, midValue, min, max, rate)',
 	'{',
 	'var exp = -rate*(value - midValue);',
 	'var result = 1 / (1 + Math.pow(Math.E, exp));',
 	'return result * (max-min) + min;',
 	'}'
 	].join('\n');
-DuAEExpression.Library["logisitic"].requirements = [];
+DuAEExpression.Library["logistic"].requirements = [];
 
 /**
     * Returns the mean of a set of values
