@@ -439,6 +439,16 @@ d -= z / (x + d * (2 * j + 3 * k * d));
 return d * (l + d * (m + d * n));
 }
 }
+function expInterpolation(t, tMin, tMax, vMin, vMax, rate)
+{
+if (rate == 0) return linearExtrapolation(t, tMin, tMax, vMin, vMax);
+tMax = ( tMax - tMin ) * rate;
+t = ( t - tMin ) * rate;
+if (t <= 0) return vMin;
+var m = Math.exp(tMax);
+t = Math.exp(t);
+return linearExtrapolation(t, 1, m, vMin, vMax);
+}
 function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )
 {
 if (t != tMin)
@@ -461,6 +471,29 @@ exp *= 1/ Math.pow(fwhm, 2);
 var result = Math.pow(Math.E, exp);
 result = result * (value2-value1) + value1;
 return result;
+}
+function linearExtrapolation( t, tMin, tMax, value1, value2 )
+{
+if (tMax == tMin) return (value1+value2) / 2;
+return value1 + (( t - tMin) / (tMax - tMin)) * (value2 - value1);
+}
+function logInterpolation(t, tMin, tMax, vMin, vMax, rate)
+{
+if (rate == 0) return linearExtrapolation(t, tMin, tMax, vMin, vMax);
+tMax = ( tMax - tMin ) * rate + 1;
+t = ( t - tMin ) * rate + 1;
+if (t <= 1) return vMin;
+var m = Math.log(tMax);
+var v = Math.log(t);
+return linearExtrapolation(v, 0, m, vMin, vMax);
+}
+function logisticInterpolation( t, tMin, tMax, value1, value2, rate, tMid )
+{
+if (rate == 0) return linearExtrapolation(t, tMin, tMax, value1, value2);
+t = logistic( t, tMid, tMin, tMax, rate);
+var m = logistic( tMin, tMid, tMin, tMax, rate);
+var M = logistic( tMax, tMid, tMin, tMax, rate);
+return linearExtrapolation( t, m, M, value1, value2);
 }
 function getNextKey(t, prop) {
 if (prop.numKeys == 0) return null;
@@ -497,7 +530,7 @@ var lastVelocity = velocityAtTime( lastKey.time - 0.001 );
 var timeSpent = t - lastKey.time;
 return lastKey.value + timeSpent * lastVelocity;
 }
-function cycleIn( t, nK, o ) {
+function cycleIn( t, nK, o, vAtTime ) {
 if (numKeys <= 1) return value;
 var lastKeyIndex = numKeys;
 if (nK >= 2)
@@ -514,11 +547,11 @@ var timeSpent = loopStartTime - t;
 var numLoops = Math.floor( timeSpent / loopDuration );
 var loopTime = loopDuration - timeSpent;
 if (numLoops > 0) loopTime = loopDuration - ( timeSpent - numLoops * loopDuration );
-var r = valueAtTime( loopStartTime + loopTime );
+var r = vAtTime( loopStartTime + loopTime );
 if (o) r -= ( key( lastKeyIndex ).value - key( 1 ).value ) * ( numLoops + 1 );
 return r;
 }
-function cycleOut( t, nK, o ) {
+function cycleOut( t, nK, o, vAtTime ) {
 if (numKeys <= 1) return value;
 var firstKeyIndex = 1;
 if (nK >= 2)
@@ -535,11 +568,11 @@ var timeSpent = t - loopEndTime;
 var numLoops = Math.floor( timeSpent / loopDuration );
 var loopTime = timeSpent;
 if (numLoops > 0) loopTime = timeSpent - numLoops * loopDuration;
-var r = valueAtTime( loopStartTime + loopTime );
+var r = vAtTime( loopStartTime + loopTime );
 if (o) r += ( key( numKeys ).value - key( firstKeyIndex ).value ) * ( numLoops + 1 );
 return r;
 }
-function pingPongIn( t, nK ) {
+function pingPongIn( t, nK, vAtTime ) {
 if (numKeys <= 1) return value;
 var lasttKeyIndex = numKeys;
 if (nK >= 2)
@@ -560,9 +593,9 @@ if (numLoops > 0)
 loopTime = timeSpent - numLoops * loopDuration;
 if (numLoops % 2 != 0) loopTime = loopDuration - loopTime;
 }
-return valueAtTime( loopStartTime + loopTime );
+return vAtTime( loopStartTime + loopTime );
 }
-function pingPongOut( t, nK ) {
+function pingPongOut( t, nK, vAtTime ) {
 if (numKeys <= 1) return value;
 var firstKeyIndex = 1;
 if (nK >= 2)
@@ -583,7 +616,7 @@ if (numLoops > 0)
 loopTime = timeSpent - numLoops * loopDuration;
 if (numLoops % 2 == 0) loopTime = loopDuration - loopTime;
 }
-return valueAtTime( loopStartTime + loopTime );
+return vAtTime( loopStartTime + loopTime );
 }
 function addPoints(p1, p2, w) {
 var n = p1.length;

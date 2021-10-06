@@ -583,6 +583,34 @@ function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {
 
 
 /**
+ * Interpolates a value with an exponential function.<br />
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * @function
+ * @param {number} t The value to interpolate
+ * @param {number} [tMin=0] The minimum value of the initial range
+ * @param {number} [tMax=1] The maximum value of the initial range
+ * @param {number} [value1=0] The minimum value of the interpolated result
+ * @param {number} [value2=1] The maximum value of the interpolated result
+ * @param {number} [rate=1] The raising speed in the range [0, inf].
+ * @return {number} the value.
+ * @requires linearExtrapolation
+ */
+function expInterpolation(t, tMin, tMax, vMin, vMax, rate)
+{
+    if (rate == 0) return linearExtrapolation(t, tMin, tMax, vMin, vMax);
+	// Offset t to be in the range 0-Max
+	tMax = ( tMax - tMin ) * rate;
+	t = ( t - tMin ) * rate;
+	if (t <= 0) return vMin;
+	// Compute the max
+	var m = Math.exp(tMax);
+	// Compute current value
+	t = Math.exp(t);
+	return linearExtrapolation(t, 1, m, vMin, vMax);
+}
+
+/**
  * Interpolates a value with a gaussian function.<br />
  * This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.<br />
  * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
@@ -620,6 +648,82 @@ function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )
 	result = result * (value2-value1) + value1;
     return result;
 }
+
+/**
+ * Interpolates a value with a linear function, but also extrapolates it outside of known values.<br />
+ * This method can replace <code>linear()</code>, adding extrapolation.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * @function
+ * @param {number} t The value to interpolate and extrapolate
+ * @param {number} [tMin=0] The minimum value of the initial range
+ * @param {number} [tMax=1] The maximum value of the initial range
+ * @param {number} [value1=0] The minimum value of the interpolated result
+ * @param {number} [value2=1] The maximum value of the interpolated result
+ * @return {number} the value.
+ */
+function linearExtrapolation( t, tMin, tMax, value1, value2 )
+{
+  if (tMax == tMin) return (value1+value2) / 2;
+  return value1 + (( t - tMin) / (tMax - tMin)) * (value2 - value1);
+}
+
+
+/**
+ * Interpolates a value with a logarithmic function.<br />
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * @function
+ * @param {number} t The value to interpolate
+ * @param {number} [tMin=0] The minimum value of the initial range
+ * @param {number} [tMax=1] The maximum value of the initial range
+ * @param {number} [value1=0] The minimum value of the interpolated result
+ * @param {number} [value2=1] The maximum value of the interpolated result
+ * @param {number} [rate=1] The raising speed in the range [0, inf].
+ * @return {number} the value.
+ * @requires linearExtrapolation
+ */
+ function logInterpolation(t, tMin, tMax, vMin, vMax, rate)
+ {
+    if (rate == 0) return linearExtrapolation(t, tMin, tMax, vMin, vMax);
+    // Offset t to be in the range 0-Max
+    tMax = ( tMax - tMin ) * rate + 1;
+    t = ( t - tMin ) * rate + 1;
+    if (t <= 1) return vMin;
+    // Compute the max
+    var m = Math.log(tMax);
+    // Compute current value
+    var v = Math.log(t);
+    return linearExtrapolation(v, 0, m, vMin, vMax);
+ }
+
+/**
+ * Interpolates a value with a logistic (sigmoid) function.<br />
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * @function
+ * @param {number} t The value to interpolate
+ * @param {number} [tMin=0] The minimum value of the initial range
+ * @param {number} [tMax=1] The maximum value of the initial range
+ * @param {number} [value1=0] The minimum value of the interpolated result
+ * @param {number} [value2=1] The maximum value of the interpolated result
+ * @param {number} [rate=1] The raising speed in the range [0, inf].
+ * @param {number} [tMid=0.5] The t value at which the interpolated value should be half way.
+ * @return {number} the value.
+ * @requires logistic
+ * @requires linearExtrapolation
+ */
+function logisticInterpolation( t, tMin, tMax, value1, value2, rate, tMid )
+{
+    if (rate == 0) return linearExtrapolation(t, tMin, tMax, value1, value2);
+    t = logistic( t, tMid, tMin, tMax, rate);
+    
+    // Scale to actual min/max
+    var m = logistic( tMin, tMid, tMin, tMax, rate);
+    var M = logistic( tMax, tMid, tMin, tMax, rate);
+
+    return linearExtrapolation( t, m, M, value1, value2);
+}
+
 
 /**
  * Gets the key immediately before the given time
@@ -704,10 +808,11 @@ function continueOut( t ) {
  * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all previous frames.
  * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
  * @param {Boolean} o Wether to offset or cycle
+ * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
  * @returns {float|float[]} The new value
  * @function
  */
- function cycleIn( t, nK, o ) {
+ function cycleIn( t, nK, o, vAtTime ) {
 	if (numKeys <= 1) return value;
 	
 	var lastKeyIndex = numKeys;
@@ -728,7 +833,7 @@ function continueOut( t ) {
 	var numLoops = Math.floor( timeSpent / loopDuration );
 	var loopTime = loopDuration - timeSpent;
 	if (numLoops > 0) loopTime = loopDuration - ( timeSpent - numLoops * loopDuration );
-	var r = valueAtTime( loopStartTime + loopTime );
+	var r = vAtTime( loopStartTime + loopTime );
 	if (o) r -= ( key( lastKeyIndex ).value - key( 1 ).value ) * ( numLoops + 1 );
 	return r;
 }
@@ -739,10 +844,11 @@ function continueOut( t ) {
  * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all subsequent frames.
  * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
  * @param {Boolean} o Wether to offset or cycle
+ * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
  * @returns {float|float[]} The new value
  * @function
  */
-function cycleOut( t, nK, o ) {
+function cycleOut( t, nK, o, vAtTime ) {
 	if (numKeys <= 1) return value;
 	
 	var firstKeyIndex = 1;
@@ -763,7 +869,7 @@ function cycleOut( t, nK, o ) {
 	var numLoops = Math.floor( timeSpent / loopDuration );
 	var loopTime = timeSpent;
 	if (numLoops > 0) loopTime = timeSpent - numLoops * loopDuration;
-	var r = valueAtTime( loopStartTime + loopTime );
+	var r = vAtTime( loopStartTime + loopTime );
 	if (o) r += ( key( numKeys ).value - key( firstKeyIndex ).value ) * ( numLoops + 1 );
 	return r;
 }
@@ -772,10 +878,11 @@ function cycleOut( t, nK, o ) {
  * Animatable equivalent to loopIn('pingpong').
  * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all previous frames.
  * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
+ * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
  * @returns {float} The new value
  * @function
  */
- function pingPongIn( t, nK ) {
+ function pingPongIn( t, nK, vAtTime ) {
 	if (numKeys <= 1) return value;
 	
 	var lasttKeyIndex = numKeys;
@@ -800,17 +907,19 @@ function cycleOut( t, nK, o ) {
 		loopTime = timeSpent - numLoops * loopDuration;
 		if (numLoops % 2 != 0) loopTime = loopDuration - loopTime;
 	}
-	return valueAtTime( loopStartTime + loopTime );
+	return vAtTime( loopStartTime + loopTime );
 }
 
 /**
  * Animatable equivalent to loopOut('pingpong').
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all subsequent frames.
  * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
+ * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
  * @returns {float} The new value
  * @function
  */
-function pingPongOut( t, nK ) {
+function pingPongOut( t, nK, vAtTime ) {
 	if (numKeys <= 1) return value;
 	
 	var firstKeyIndex = 1;
@@ -835,7 +944,7 @@ function pingPongOut( t, nK ) {
 		loopTime = timeSpent - numLoops * loopDuration;
 		if (numLoops % 2 == 0) loopTime = loopDuration - loopTime;
 	}
-	return valueAtTime( loopStartTime + loopTime );
+	return vAtTime( loopStartTime + loopTime );
 }
 
 
