@@ -444,7 +444,6 @@ function expInterpolation(t, tMin, tMax, vMin, vMax, rate)
 if (rate == 0) return linearExtrapolation(t, tMin, tMax, vMin, vMax);
 tMax = ( tMax - tMin ) * rate;
 t = ( t - tMin ) * rate;
-if (t <= 0) return vMin;
 var m = Math.exp(tMax);
 t = Math.exp(t);
 return linearExtrapolation(t, 1, m, vMin, vMax);

@@ -602,7 +602,6 @@ function expInterpolation(t, tMin, tMax, vMin, vMax, rate)
 	// Offset t to be in the range 0-Max
 	tMax = ( tMax - tMin ) * rate;
 	t = ( t - tMin ) * rate;
-	if (t <= 0) return vMin;
 	// Compute the max
 	var m = Math.exp(tMax);
 	// Compute current value
