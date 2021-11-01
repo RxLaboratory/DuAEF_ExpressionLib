@@ -71,7 +71,7 @@ function bounce(t, elasticity, damping, vAtTime) {
           cycleDuration = framesToTime(cycleDuration);
           midDuration = cycleDuration / 2;
           maxValue = bounceValue * midDuration / damp;
-          if (numEndCycles > 100 / damping && maxValue < threshold) return value;
+          if (numEndCycles > 100 / damping && maxValue < 0.001 ) return value;
       }
       
       if (cycvarime < midDuration) bounceValue = bezierInterpolation(cycvarime, 0, midDuration, 0, maxValue, [0, .1, .33, 1]);
