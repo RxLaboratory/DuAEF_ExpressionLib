@@ -513,109 +513,188 @@ if (numKeys == 0) return false;
 var nKey = nearestKey(time);
 return nKey.time <= time && nKey.index == numKeys;
 }
-function continueIn( t ) {
+function bounce(t, elasticity, damping, vAtTime) {
+if (elasticity == 0) return value;
+if (numKeys < 2) return value;
+if (nearestKey(t).index == 1) return value;
+var pVelocity = ( vAtTime(t) - vAtTime( t - .01 ) ) * 100;
+var pSpeed = length( pVelocity );
+if (pSpeed >= 0.001 ) return value;
+var bounceStart = 0;
+var bounceTime = 0;
+var bouceKey = getPrevKey(t, thisProperty);
+bounceStart = bouceKey.time;
+bounceTime = t - bounceStart;
+pVelocity = ( vAtTime( bounceStart ) - vAtTime( bounceStart - thisComp.frameDuration * .5 ) );
+var bounceValue = ( pVelocity / thisComp.frameDuration ) ;
+var cycleDamp = Math.exp(bounceTime * damping * .1);
+var damp = Math.exp(bounceTime * damping) / (elasticity / 2);
+var cycleDuration = 1 / (elasticity * 2);
+cycleDuration = Math.round(timeToFrames(cycleDuration));
+cycleDuration = framesToTime(cycleDuration);
+var midDuration = cycleDuration / 2;
+var maxValue = bounceValue * midDuration;
+var cycvarime = bounceTime;
+var numEndCycles = 1;
+while (cycvarime > cycleDuration) {
+cycvarime = cycvarime - cycleDuration;
+cycleDuration = cycleDuration / cycleDamp;
+cycleDuration = Math.round(timeToFrames(cycleDuration));
+if (cycleDuration < 2) {
+cycleDuration = 2;
+numEndCycles++;
+}
+cycleDuration = framesToTime(cycleDuration);
+midDuration = cycleDuration / 2;
+maxValue = bounceValue * midDuration / damp;
+if (numEndCycles > 100 / damping && maxValue < threshold) return value;
+}
+if (cycvarime < midDuration) bounceValue = bezierInterpolation(cycvarime, 0, midDuration, 0, maxValue, [0, .1, .33, 1]);
+else bounceValue = bezierInterpolation(cycvarime, midDuration, cycleDuration, maxValue, 0, [.66, 0, 1, .9]);
+var prevValue = valueAtTime(bounceStart - thisComp.frameDuration);
+var startValue = valueAtTime(bounceStart);
+if (value instanceof Array) {
+for (var i = 0; i < prevValue.length; i++) {
+if (prevValue[i] > startValue[i]) bounceValue[i] = Math.abs(fThrough[i]);
+if (prevValue[i] < startValue[i]) bounceValue[i] = -Math.abs(fThrough[i]);
+}
+} else {
+if (prevValue > startValue) bounceValue = Math.abs(bounceValue);
+if (prevValue < startValue) bounceValue = -Math.abs(bounceValue);
+}
+return bounceValue + value;
+}
+function continueIn(t) {
 if (numKeys <= 1) return value;
-var firstKey = key(1);
-if ( t >= firstKey.time) return value;
-var firstVelocity = velocityAtTime( firstKey.time + 0.001 );
+var firstKey = getNextKey(t, thisProperty);
+if (!firstKey) return value;
+var firstVelocity = velocityAtTime(firstKey.time + 0.001);
 var timeSpent = firstKey.time - t;
 return firstKey.value - timeSpent * firstVelocity;
 }
-function continueOut( t ) {
+function continueOut(t) {
 if (numKeys <= 1) return value;
-var lastKey = key(numKeys);
-if (t <= lastKey.time) return value;
-var lastVelocity = velocityAtTime( lastKey.time - 0.001 );
+var lastKey = getPrevKey(t, thisProperty);
+if (!lastKey) return value;
+var lastVelocity = velocityAtTime(lastKey.time - 0.001);
 var timeSpent = t - lastKey.time;
 return lastKey.value + timeSpent * lastVelocity;
 }
-function cycleIn( t, nK, o, vAtTime ) {
+function cycleIn(t, nK, o, vAtTime) {
 if (numKeys <= 1) return value;
 var lastKeyIndex = numKeys;
-if (nK >= 2)
-{
+var firstKey = getNextKey(t, thisProperty);
+if (!firstKey) return value;
+if (firstKey.index == lastKeyIndex) return value;
+if (nK >= 2) {
 nK = nK - 1;
-lastKeyIndex = 1 + nK;
+lastKeyIndex = firstKey.index + nK;
 if (lastKeyIndex > numKeys) lastKeyIndex = numKeys;
 }
-var loopStartTime = key( 1 ).time;
-var loopEndTime = key( lastKeyIndex ).time;
+var loopStartTime = firstKey.time;
+var loopEndTime = key(lastKeyIndex).time;
 var loopDuration = loopEndTime - loopStartTime;
 if (t >= loopStartTime) return value;
 var timeSpent = loopStartTime - t;
-var numLoops = Math.floor( timeSpent / loopDuration );
+var numLoops = Math.floor(timeSpent / loopDuration);
 var loopTime = loopDuration - timeSpent;
-if (numLoops > 0) loopTime = loopDuration - ( timeSpent - numLoops * loopDuration );
-var r = vAtTime( loopStartTime + loopTime );
-if (o) r -= ( key( lastKeyIndex ).value - key( 1 ).value ) * ( numLoops + 1 );
+if (numLoops > 0) loopTime = loopDuration - (timeSpent - numLoops * loopDuration);
+var r = vAtTime(loopStartTime + loopTime);
+if (o) r -= (key(lastKeyIndex).value - firstKey.value) * (numLoops + 1);
 return r;
 }
-function cycleOut( t, nK, o, vAtTime ) {
+function cycleOut(t, nK, o, vAtTime) {
 if (numKeys <= 1) return value;
 var firstKeyIndex = 1;
-if (nK >= 2)
-{
+var lastKey = getPrevKey(t, thisProperty);
+if (!lastKey) return value;
+if (lastKey.index == firstKeyIndex) return value;
+if (nK >= 2) {
 nK = nK - 1;
-firstKeyIndex = numKeys - nK;
+firstKeyIndex = lastKey.index - nK;
 if (firstKeyIndex < 1) firstKeyIndex = 1;
 }
-var loopStartTime = key( firstKeyIndex ).time;
-var loopEndTime = key( numKeys ).time;
+var loopStartTime = key(firstKeyIndex).time;
+var loopEndTime = key(lastKey.index).time;
 var loopDuration = loopEndTime - loopStartTime;
 if (t <= loopEndTime) return value;
 var timeSpent = t - loopEndTime;
-var numLoops = Math.floor( timeSpent / loopDuration );
+var numLoops = Math.floor(timeSpent / loopDuration);
 var loopTime = timeSpent;
 if (numLoops > 0) loopTime = timeSpent - numLoops * loopDuration;
-var r = vAtTime( loopStartTime + loopTime );
-if (o) r += ( key( numKeys ).value - key( firstKeyIndex ).value ) * ( numLoops + 1 );
+var r = vAtTime(loopStartTime + loopTime);
+if (o) r += (key(lastKey.index).value - key(firstKeyIndex).value) * (numLoops + 1);
 return r;
 }
-function pingPongIn( t, nK, vAtTime ) {
-if (numKeys <= 1) return value;
-var lasttKeyIndex = numKeys;
-if (nK >= 2)
-{
-nK = nK - 1;
-lasttKeyIndex = 1 + nK;
-if (lasttKeyIndex > numKeys) lasttKeyIndex = numKeys;
+function overShoot(t, elasticity, damping, vAtTime) {
+if (elasticity == 0) return value;
+if (numKeys < 2) return value;
+if (nearestKey(t).index == 1) return value;
+var pVelocity = ( vAtTime(t) - vAtTime( t - .01 ) ) * 100;
+var pSpeed = length( pVelocity );
+if (pSpeed >= 0.001 ) return value;
+var oShootStart = 0;
+var oShootTime = 0;
+var oShootKey = getPrevKey(t, thisProperty);
+oShootStart = oShootKey.time;
+oShootTime = t - oShootStart;
+pVelocity = ( vAtTime( oShootStart ) - vAtTime( oShootStart - thisComp.frameDuration * .5 ) );
+var damp = Math.exp(oShootTime * damping);
+var sinus = elasticity * oShootTime * 2 * Math.PI;
+sinus = Math.sin(sinus);
+sinus = (.3 / elasticity) * sinus;
+sinus = sinus / damp;
+if (Math.abs(sinus) < .00001) return value;
+var oShoot = ( pVelocity / thisComp.frameDuration ) * sinus;
+return oShoot+value;
 }
-var loopStartTime = key( 1 ).time;
-var loopEndTime = key( lasttKeyIndex ).time;
+function pingPongIn(t, nK, vAtTime) {
+if (numKeys <= 1) return value;
+var lastKeyIndex = numKeys;
+var firstKey = getNextKey(t, thisProperty);
+if (!firstKey) return value;
+if (firstKey.index == lastKeyIndex) return value;
+if (nK >= 2) {
+nK = nK - 1;
+lastKeyIndex = firstKey.index + nK;
+if (lastKeyIndex > numKeys) lastKeyIndex = numKeys;
+}
+var loopStartTime = firstKey.time;
+var loopEndTime = key(lastKeyIndex).time;
 var loopDuration = loopEndTime - loopStartTime;
 if (t >= loopStartTime) return value;
 var timeSpent = loopStartTime - t;
-var numLoops = Math.floor( timeSpent / loopDuration );
+var numLoops = Math.floor(timeSpent / loopDuration);
 var loopTime = timeSpent;
-if (numLoops > 0)
-{
+if (numLoops > 0) {
 loopTime = timeSpent - numLoops * loopDuration;
 if (numLoops % 2 != 0) loopTime = loopDuration - loopTime;
 }
-return vAtTime( loopStartTime + loopTime );
+return vAtTime(loopStartTime + loopTime);
 }
-function pingPongOut( t, nK, vAtTime ) {
+function pingPongOut(t, nK, vAtTime) {
 if (numKeys <= 1) return value;
 var firstKeyIndex = 1;
-if (nK >= 2)
-{
+var lastKey = getPrevKey(t, thisProperty);
+if (!lastKey) return value;
+if (lastKey.index == firstKeyIndex) return value;
+if (nK >= 2) {
 nK = nK - 1;
-firstKeyIndex = numKeys - nK;
+firstKeyIndex = lastKey.index - nK;
 if (firstKeyIndex < 1) firstKeyIndex = 1;
 }
-var loopStartTime = key( firstKeyIndex ).time;
-var loopEndTime = key( numKeys ).time;
+var loopStartTime = key(firstKeyIndex).time;
+var loopEndTime = key(lastKey.index).time;
 var loopDuration = loopEndTime - loopStartTime;
 if (t <= loopEndTime) return value;
 var timeSpent = t - loopEndTime;
-var numLoops = Math.floor( timeSpent / loopDuration );
+var numLoops = Math.floor(timeSpent / loopDuration);
 var loopTime = loopDuration - timeSpent;
-if (numLoops > 0)
-{
+if (numLoops > 0) {
 loopTime = timeSpent - numLoops * loopDuration;
 if (numLoops % 2 == 0) loopTime = loopDuration - loopTime;
 }
-return vAtTime( loopStartTime + loopTime );
+return vAtTime(loopStartTime + loopTime);
 }
 function addPoints(p1, p2, w) {
 var n = p1.length;
@@ -834,18 +913,18 @@ try { if (typeof prop.speed !== "undefined") return true; }
 catch (e) { return false; }
 }
 function isStill(t, threshold) {
-var d = valueAtTime(t) - valueAtTime(t + framesToTime(1));
+var d = valueAtTime(t-.001) - valueAtTime(t + .001 );
 if (d instanceof Array) {
 for (var i = 0; i < d.length; i++) {
 d[i] = Math.abs(d[i]);
-if (d[i] >= threshold) {
+if (d[i] > threshold) {
 return false;
 }
 }
 return true;
 } else {
 d = Math.abs(d);
-return d < threshold;
+return d <= threshold;
 }
 }
 function lastActiveTime( prop, t ) {

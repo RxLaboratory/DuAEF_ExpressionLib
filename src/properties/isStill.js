@@ -7,18 +7,17 @@
  * @return {boolean} true if the property does not vary.
  */
 function isStill(t, threshold) {
-	var d = valueAtTime(t) - valueAtTime(t + framesToTime(1));
-
+	var d = valueAtTime(t-.001) - valueAtTime(t + .001 );
 	if (d instanceof Array) {
 		for (var i = 0; i < d.length; i++) {
 			d[i] = Math.abs(d[i]);
-			if (d[i] >= threshold) {
+			if (d[i] > threshold) {
 				return false;
 			}
 		}
 		return true;
 	} else {
 		d = Math.abs(d);
-		return d < threshold;
+		return d <= threshold;
 	}
 }

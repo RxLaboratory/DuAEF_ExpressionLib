@@ -767,40 +767,130 @@ function isAfterLastKey() {
 
 
 /**
+ * Bounce, to be used when the speed is 0.
+ * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all subsequent frames.
+ * @param {float} elasticity The elasticity, which controls the amplitude and frequence according to the last known velocity
+ * @param {float} damping Damping
+ * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
+ * @returns {float|float[]} The new value
+ * @function
+ * @requires getPrevKey
+ * @requires bezierInterpolation
+ */
+function bounce(t, elasticity, damping, vAtTime) {
+  
+    // Nothing without elasticity
+      if (elasticity == 0) return value;
+      
+      // Needs keyframes
+      if (numKeys < 2) return value;
+      
+      // The nearest key is the first one
+      if (nearestKey(t).index == 1) return value;
+      
+      // Get the velocity and speed
+      var pVelocity = ( vAtTime(t) - vAtTime( t - .01 ) ) * 100;
+      var pSpeed = length( pVelocity );
+  
+      // Too fast
+      if (pSpeed >= 0.001 ) return value;
+      
+      //check start and current time
+      var bounceStart = 0;
+      var bounceTime = 0;
+  
+      //follow through starts at previous key
+    var bouceKey = getPrevKey(t, thisProperty);
+    bounceStart = bouceKey.time;
+  
+    // Time spent since start time
+      bounceTime = t - bounceStart;
+      
+      // Last velocity
+      pVelocity = ( vAtTime( bounceStart ) - vAtTime( bounceStart - thisComp.frameDuration * .5 ) );
+      var bounceValue = ( pVelocity / thisComp.frameDuration ) ;
+      
+      
+      var cycleDamp = Math.exp(bounceTime * damping * .1);
+      var damp = Math.exp(bounceTime * damping) / (elasticity / 2);
+      var cycleDuration = 1 / (elasticity * 2);
+      
+    //round to whole frames for better animation
+      cycleDuration = Math.round(timeToFrames(cycleDuration));
+      cycleDuration = framesToTime(cycleDuration);
+      var midDuration = cycleDuration / 2;
+      var maxValue = bounceValue * midDuration;
+      
+    //check which cycle it is and cycvarime
+      var cycvarime = bounceTime;
+      // the number of cycles where we "cheat" which are rounded to two frames
+      var numEndCycles = 1;
+      
+      while (cycvarime > cycleDuration) {
+          cycvarime = cycvarime - cycleDuration;
+          cycleDuration = cycleDuration / cycleDamp;
+          //round everything to whole frames for better animation
+          cycleDuration = Math.round(timeToFrames(cycleDuration));
+          //this is where we cheat to continue to bounce on cycles < 2 frames
+          if (cycleDuration < 2) {
+              cycleDuration = 2;
+              numEndCycles++;
+          }
+          cycleDuration = framesToTime(cycleDuration);
+          midDuration = cycleDuration / 2;
+          maxValue = bounceValue * midDuration / damp;
+          if (numEndCycles > 100 / damping && maxValue < threshold) return value;
+      }
+      
+      if (cycvarime < midDuration) bounceValue = bezierInterpolation(cycvarime, 0, midDuration, 0, maxValue, [0, .1, .33, 1]);
+      else bounceValue = bezierInterpolation(cycvarime, midDuration, cycleDuration, maxValue, 0, [.66, 0, 1, .9]);
+      
+      var prevValue = valueAtTime(bounceStart - thisComp.frameDuration);
+      var startValue = valueAtTime(bounceStart);
+      if (value instanceof Array) {
+          for (var i = 0; i < prevValue.length; i++) {
+              if (prevValue[i] > startValue[i]) bounceValue[i] = Math.abs(fThrough[i]);
+              if (prevValue[i] < startValue[i]) bounceValue[i] = -Math.abs(fThrough[i]);
+          }
+      } else {
+          if (prevValue > startValue) bounceValue = Math.abs(bounceValue);
+          if (prevValue < startValue) bounceValue = -Math.abs(bounceValue);
+      }
+  
+      return bounceValue + value;
+  }
+
+/**
  * Animatable equivalent to loopIn('continue').
  * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all previous frames.
  * @returns {float|float[]} The new value
  * @function
+ * @requires getNextKey
  */
-function continueIn( t ) {
+ function continueIn(t) {
 	if (numKeys <= 1) return value;
-	
-	var firstKey = key(1);
-	if ( t >= firstKey.time) return value;
-	
-	var firstVelocity = velocityAtTime( firstKey.time + 0.001 );
+	var firstKey = getNextKey(t, thisProperty);
+	if (!firstKey) return value;
+	var firstVelocity = velocityAtTime(firstKey.time + 0.001);
 	var timeSpent = firstKey.time - t;
 	return firstKey.value - timeSpent * firstVelocity;
 }
-
 
 /**
  * Animatable equivalent to loopOut('continue').
  * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all subsequent frames.
  * @returns {float|float[]} The new value
  * @function
+ * @requires getNextKey
  */
-function continueOut( t ) {
+function continueOut(t) {
 	if (numKeys <= 1) return value;
-	
-	var lastKey = key(numKeys);
-	if (t <= lastKey.time) return value;
-	
-	var lastVelocity = velocityAtTime( lastKey.time - 0.001 );
+	var lastKey = getPrevKey(t, thisProperty);
+	if (!lastKey) return value;
+	var lastVelocity = velocityAtTime(lastKey.time - 0.001);
 	var timeSpent = t - lastKey.time;
 	return lastKey.value + timeSpent * lastVelocity;
 }
-
 
 /**
  * Animatable equivalent to loopIn('cycle') and loopIn('offset').
@@ -810,33 +900,34 @@ function continueOut( t ) {
  * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
  * @returns {float|float[]} The new value
  * @function
+ * @requires getNextKey
  */
- function cycleIn( t, nK, o, vAtTime ) {
+ function cycleIn(t, nK, o, vAtTime) {
 	if (numKeys <= 1) return value;
-	
 	var lastKeyIndex = numKeys;
-	if (nK >= 2)
-	{
+	
+	var firstKey = getNextKey(t, thisProperty);
+	if (!firstKey) return value;
+	if (firstKey.index == lastKeyIndex) return value;
+	
+	if (nK >= 2) {
 		nK = nK - 1;
-		lastKeyIndex = 1 + nK;
+		lastKeyIndex = firstKey.index + nK;
 		if (lastKeyIndex > numKeys) lastKeyIndex = numKeys;
 	}
 	
-	var loopStartTime = key( 1 ).time;
-	var loopEndTime = key( lastKeyIndex ).time;
+	var loopStartTime = firstKey.time;
+	var loopEndTime = key(lastKeyIndex).time;
 	var loopDuration = loopEndTime - loopStartTime;
-	
 	if (t >= loopStartTime) return value;
-	
 	var timeSpent = loopStartTime - t;
-	var numLoops = Math.floor( timeSpent / loopDuration );
+	var numLoops = Math.floor(timeSpent / loopDuration);
 	var loopTime = loopDuration - timeSpent;
-	if (numLoops > 0) loopTime = loopDuration - ( timeSpent - numLoops * loopDuration );
-	var r = vAtTime( loopStartTime + loopTime );
-	if (o) r -= ( key( lastKeyIndex ).value - key( 1 ).value ) * ( numLoops + 1 );
+	if (numLoops > 0) loopTime = loopDuration - (timeSpent - numLoops * loopDuration);
+	var r = vAtTime(loopStartTime + loopTime);
+	if (o) r -= (key(lastKeyIndex).value - firstKey.value) * (numLoops + 1);
 	return r;
 }
-
 
 /**
  * Animatable equivalent to loopOut('cycle') and loopOut('offset').
@@ -846,31 +937,93 @@ function continueOut( t ) {
  * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
  * @returns {float|float[]} The new value
  * @function
+ * @requires getPrevKey
  */
-function cycleOut( t, nK, o, vAtTime ) {
+ function cycleOut(t, nK, o, vAtTime) {
 	if (numKeys <= 1) return value;
-	
 	var firstKeyIndex = 1;
-	if (nK >= 2)
-	{
+	
+	var lastKey = getPrevKey(t, thisProperty);
+	if (!lastKey) return value;
+	if (lastKey.index == firstKeyIndex) return value;
+	
+	if (nK >= 2) {
 		nK = nK - 1;
-		firstKeyIndex = numKeys - nK;
+		firstKeyIndex = lastKey.index - nK;
 		if (firstKeyIndex < 1) firstKeyIndex = 1;
 	}
 	
-	var loopStartTime = key( firstKeyIndex ).time;
-	var loopEndTime = key( numKeys ).time;
+	var loopStartTime = key(firstKeyIndex).time;
+	var loopEndTime = key(lastKey.index).time;
 	var loopDuration = loopEndTime - loopStartTime;
-	
 	if (t <= loopEndTime) return value;
-	
 	var timeSpent = t - loopEndTime;
-	var numLoops = Math.floor( timeSpent / loopDuration );
+	var numLoops = Math.floor(timeSpent / loopDuration);
 	var loopTime = timeSpent;
 	if (numLoops > 0) loopTime = timeSpent - numLoops * loopDuration;
-	var r = vAtTime( loopStartTime + loopTime );
-	if (o) r += ( key( numKeys ).value - key( firstKeyIndex ).value ) * ( numLoops + 1 );
+	var r = vAtTime(loopStartTime + loopTime);
+	if (o) r += (key(lastKey.index).value - key(firstKeyIndex).value) * (numLoops + 1);
 	return r;
+}
+
+/**
+ * Overshoot animation, to be used when the speed is 0.
+ * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all subsequent frames.
+ * @param {float} elasticity The elasticity, which controls the amplitude and frequence according to the last known velocity
+ * @param {float} damping Damping
+ * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
+ * @returns {float|float[]} The new value
+ * @function
+ * @requires getPrevKey
+ */
+function overShoot(t, elasticity, damping, vAtTime) {
+
+	// Nothing without elasticity
+	if (elasticity == 0) return value;
+	
+	// Needs keyframes
+	if (numKeys < 2) return value;
+	
+	// The nearest key is the first one
+	if (nearestKey(t).index == 1) return value;
+	
+	// Get the velocity and speed
+	var pVelocity = ( vAtTime(t) - vAtTime( t - .01 ) ) * 100;
+	var pSpeed = length( pVelocity );
+
+	// Too fast
+	if (pSpeed >= 0.001 ) return value;
+	
+	//check start and current time
+	var oShootStart = 0;
+	var oShootTime = 0;
+  
+    //follow through starts at previous key
+    var oShootKey = getPrevKey(t, thisProperty);
+    oShootStart = oShootKey.time;
+
+    // Time spent since start time
+	oShootTime = t - oShootStart;
+	
+	// Last velocity
+	pVelocity = ( vAtTime( oShootStart ) - vAtTime( oShootStart - thisComp.frameDuration * .5 ) );
+
+	// damping ratio
+	var damp = Math.exp(oShootTime * damping);
+	// sinus evolution 
+	var sinus = elasticity * oShootTime * 2 * Math.PI;
+	//sinus
+	sinus = Math.sin(sinus);
+	// elasticity
+	sinus = (.3 / elasticity) * sinus;
+	// damping
+	sinus = sinus / damp;
+	// Stop when too small
+	if (Math.abs(sinus) < .00001) return value;
+	// Result from velocity
+	var oShoot = ( pVelocity / thisComp.frameDuration ) * sinus;
+	
+	return oShoot+value;
 }
 
 /**
@@ -880,33 +1033,34 @@ function cycleOut( t, nK, o, vAtTime ) {
  * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
  * @returns {float} The new value
  * @function
+ * @requires getNextKey
  */
- function pingPongIn( t, nK, vAtTime ) {
+ function pingPongIn(t, nK, vAtTime) {
 	if (numKeys <= 1) return value;
+	var lastKeyIndex = numKeys;
 	
-	var lasttKeyIndex = numKeys;
-	if (nK >= 2)
-	{
+	var firstKey = getNextKey(t, thisProperty);
+	if (!firstKey) return value;
+	if (firstKey.index == lastKeyIndex) return value;
+	
+	if (nK >= 2) {
 		nK = nK - 1;
-		lasttKeyIndex = 1 + nK;
-		if (lasttKeyIndex > numKeys) lasttKeyIndex = numKeys;
+		lastKeyIndex = firstKey.index + nK;
+		if (lastKeyIndex > numKeys) lastKeyIndex = numKeys;
 	}
 	
-	var loopStartTime = key( 1 ).time;
-	var loopEndTime = key( lasttKeyIndex ).time;
+	var loopStartTime = firstKey.time;
+	var loopEndTime = key(lastKeyIndex).time;
 	var loopDuration = loopEndTime - loopStartTime;
-	
 	if (t >= loopStartTime) return value;
-	
 	var timeSpent = loopStartTime - t;
-	var numLoops = Math.floor( timeSpent / loopDuration );
+	var numLoops = Math.floor(timeSpent / loopDuration);
 	var loopTime = timeSpent;
-	if (numLoops > 0)
-	{
+	if (numLoops > 0) {
 		loopTime = timeSpent - numLoops * loopDuration;
 		if (numLoops % 2 != 0) loopTime = loopDuration - loopTime;
 	}
-	return vAtTime( loopStartTime + loopTime );
+	return vAtTime(loopStartTime + loopTime);
 }
 
 /**
@@ -917,35 +1071,35 @@ function cycleOut( t, nK, o, vAtTime ) {
  * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
  * @returns {float} The new value
  * @function
+ * @requires getPrevKey
  */
-function pingPongOut( t, nK, vAtTime ) {
+ function pingPongOut(t, nK, vAtTime) {
 	if (numKeys <= 1) return value;
-	
 	var firstKeyIndex = 1;
-	if (nK >= 2)
-	{
+	
+	var lastKey = getPrevKey(t, thisProperty);
+	if (!lastKey) return value;
+	if (lastKey.index == firstKeyIndex) return value;
+	
+	if (nK >= 2) {
 		nK = nK - 1;
-		firstKeyIndex = numKeys - nK;
+		firstKeyIndex = lastKey.index - nK;
 		if (firstKeyIndex < 1) firstKeyIndex = 1;
 	}
 	
-	var loopStartTime = key( firstKeyIndex ).time;
-	var loopEndTime = key( numKeys ).time;
+	var loopStartTime = key(firstKeyIndex).time;
+	var loopEndTime = key(lastKey.index).time;
 	var loopDuration = loopEndTime - loopStartTime;
-	
 	if (t <= loopEndTime) return value;
-	
 	var timeSpent = t - loopEndTime;
-	var numLoops = Math.floor( timeSpent / loopDuration );
+	var numLoops = Math.floor(timeSpent / loopDuration);
 	var loopTime = loopDuration - timeSpent;
-	if (numLoops > 0)
-	{
+	if (numLoops > 0) {
 		loopTime = timeSpent - numLoops * loopDuration;
 		if (numLoops % 2 == 0) loopTime = loopDuration - loopTime;
 	}
-	return vAtTime( loopStartTime + loopTime );
+	return vAtTime(loopStartTime + loopTime);
 }
-
 
 /**
  * Adds two lists of points/vectors.
@@ -1408,19 +1562,18 @@ function isSpatial(prop) {
  * @return {boolean} true if the property does not vary.
  */
 function isStill(t, threshold) {
-	var d = valueAtTime(t) - valueAtTime(t + framesToTime(1));
-
+	var d = valueAtTime(t-.001) - valueAtTime(t + .001 );
 	if (d instanceof Array) {
 		for (var i = 0; i < d.length; i++) {
 			d[i] = Math.abs(d[i]);
-			if (d[i] >= threshold) {
+			if (d[i] > threshold) {
 				return false;
 			}
 		}
 		return true;
 	} else {
 		d = Math.abs(d);
-		return d < threshold;
+		return d <= threshold;
 	}
 }
 
