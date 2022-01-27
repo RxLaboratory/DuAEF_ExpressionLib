@@ -147,7 +147,7 @@ FuzzySet.prototype = {
       else if (this.shapeIn === "sigmoid")
       {
           mid = (this.plateauMin + this.min) / 2;
-          crisp.push( inverseLogistic(veracity, mid) );
+          crisp.push( inverseLogistic(veracity, mid, 0, 1, 1) );
       }
       else if (this.shapeIn === "gaussian")
       {
@@ -175,7 +175,7 @@ FuzzySet.prototype = {
       else if (this.shapeOut === "sigmoid")
       {
           mid = (this.plateauMax + this.max) / 2;
-          crisp.push( inverseLogistic( 1-veracity, mid, 0, 1 ) );
+          crisp.push( inverseLogistic( 1-veracity, mid, 0, 1, 1 ) );
       }
       else if (this.shapeOut === "gaussian")
       {
@@ -293,7 +293,6 @@ FuzzyValue.prototype = {
               ver = v.veracity;
   
               sumWeights += ver;
-              
   
               // generate report
               if (this.reportEnabled)
@@ -304,10 +303,11 @@ FuzzyValue.prototype = {
                   }
   
                   var reportRule = [];
-                  reportRule.push( "Rule #" + v.ruleNum +": Set " + fuzzyset.toString() + " (" + q.toString() + ")" );
+                  reportRule.push( "Rule #" + v.ruleNum +": Set " + fuzzyset.name);
                   reportRule.push( "Gives val: " + Math.round(val*1000)/1000 + " from these values: [ " + vals.join(", ") + " ]");
                   reportRule.push( "With a veracity of: " + Math.round(ver*1000)/1000 );
                   reportRule.number = v.ruleNum;
+                  
                   this.report.push( reportRule );
               }
           }
@@ -317,7 +317,11 @@ FuzzyValue.prototype = {
   
   
       //sort the report
-      if (this.reportEnabled) this.report.sort(ruleSorter);
+      if (this.reportEnabled)
+      {
+        this.report.sort(ruleSorter);
+        this.report.push(["\nFinal value is: " + crisp]);
+      }
   
       if (clearSets)
       {
