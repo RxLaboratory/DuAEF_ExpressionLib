@@ -5,10 +5,10 @@
   * @author Nicolas "Duduf" Dufresne
   * @license GPL-v3
   * @copyright 2020-2022 Nicolas Dufresne and contributors
-  * @requires logistic
-  * @requires inverseLogistic
   * @requires gaussian
   * @requires inverseGaussian
+  * @requires inverseLogisitic
+  * @requires logistic
   * @requires mean
 */
 
