@@ -7,7 +7,7 @@
   * @copyright 2020-2022 Nicolas Dufresne and contributors
   * @requires gaussian
   * @requires inverseGaussian
-  * @requires inverseLogisitic
+  * @requires inverseLogistic
   * @requires logistic
   * @requires mean
 */
