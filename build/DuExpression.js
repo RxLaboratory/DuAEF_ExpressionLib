@@ -120,7 +120,7 @@ crisp.push( this.min + range * veracity );
 else if (this.shapeIn === "sigmoid")
 {
 mid = (this.plateauMin + this.min) / 2;
-crisp.push( inverseLogistic(veracity, mid) );
+crisp.push( inverseLogistic(veracity, mid, 0, 1, 1) );
 }
 else if (this.shapeIn === "gaussian")
 {
@@ -145,7 +145,7 @@ crisp.push( this.max + 1 - (range * veracity) );
 else if (this.shapeOut === "sigmoid")
 {
 mid = (this.plateauMax + this.max) / 2;
-crisp.push( inverseLogistic( 1-veracity, mid, 0, 1 ) );
+crisp.push( inverseLogistic( 1-veracity, mid, 0, 1, 1 ) );
 }
 else if (this.shapeOut === "gaussian")
 {
@@ -200,16 +200,19 @@ this.numRules++;
 v.ruleNum = this.numRules;
 for (var i = 0, num = this.sets.length; i < num; i++)
 {
-if (fuzzyset.name == this.sets[i].name)
+var s = this.sets[i].fuzzyset;
+if (fuzzyset.name == s.name)
 {
 this.sets[i].quantifiers.push(quantifier);
 this.sets[i].veracities.push(v);
 return;
 }
 }
-fuzzyset.quantifiers = [quantifier];
-fuzzyset.veracities = [v];
-this.sets.push( fuzzyset );
+var s = {};
+s.fuzzyset = fuzzyset;
+s.quantifiers = [quantifier];
+s.veracities = [v];
+this.sets.push( s );
 },
 crispify: function ( clearSets )
 {
@@ -224,12 +227,12 @@ return a.number - b.number;
 var sumWeights = 0;
 for (var i = 0, num = this.sets.length; i < num; i++)
 {
-var fuzzyset = this.sets[i];
-for( var j = 0, numV = fuzzyset.veracities.length; j < numV; j++)
+var s = this.sets[i];
+for( var j = 0, numV = s.veracities.length; j < numV; j++)
 {
-var v = fuzzyset.veracities[j];
-var q = fuzzyset.quantifiers[j];
-var vals = fuzzyset.crispify( q, v );
+var v = s.veracities[j];
+var q = s.quantifiers[j];
+var vals = s.fuzzyset.crispify( q, v );
 var val;
 var ver;
 val = mean(vals);
@@ -359,6 +362,7 @@ return new FuzzyVeracity( v );
 function FuzzyLogic( )
 {
 this.veracity = new FuzzyVeracity(0);
+this.sets = [];
 }
 FuzzyLogic.prototype = {
 newValue: function (val, unit)
@@ -471,6 +475,19 @@ var result = Math.pow(Math.E, exp);
 result = result * (value2-value1) + value1;
 return result;
 }
+function gaussianRateToBezierPoints(rate) {
+var i = 0;
+var o = 1;
+if (rate <= -.025) {
+i = linear(rate, -0.4, -0.025, 0.17, 0.415);
+o = 1-easeIn(rate, -0.4, -0.025, 1, 0.415);
+}
+else {
+i = linear(rate, -0.025, 0.7, 0.415, 1);
+o = 1-easeOut(rate, -0.025, 0.7, 0.415, 0.15);
+}
+return [i,0,o,1];
+}
 function linearExtrapolation( t, tMin, tMax, value1, value2 )
 {
 if (tMax == tMin) return (value1+value2) / 2;
@@ -495,23 +512,61 @@ var M = logistic( tMax, tMid, tMin, tMax, rate);
 return linearExtrapolation( t, m, M, value1, value2);
 }
 function getNextKey(t, prop) {
+if (typeof t === 'undefined') t = time;
+if (typeof prop === 'undefined') prop = thisProperty;
 if (prop.numKeys == 0) return null;
 var nKey = prop.nearestKey(t);
 if (nKey.time >= t) return nKey;
 if (nKey.index < prop.numKeys) return prop.key(nKey.index + 1);
 return null;
 }
+function getNextStopKey(t, prop) {
+if (typeof t === 'undefined') t = time;
+if (typeof prop === 'undefined') prop = thisProperty;
+var k = getNextKey(t, prop);
+if (!k) return null;
+var i = k.index;
+while (i < prop.numKeys) {
+if (isStill( k.time + thisComp.frameDuration )) return k;
+k = key(k.index + 1);
+}
+return k;
+}
 function getPrevKey(t, prop) {
+if (typeof t === 'undefined') t = time;
+if (typeof prop === 'undefined') prop = thisProperty;
 if (prop.numKeys == 0) return null;
 var nKey = prop.nearestKey(t);
 if (nKey.time <= t) return nKey;
 if (nKey.index > 1) return prop.key(nKey.index - 1);
 return null;
 }
+function getPrevStartKey(t, prop) {
+if (typeof t === 'undefined') t = time;
+if (typeof prop === 'undefined') prop = thisProperty;
+var k = getPrevKey(t, prop);
+if (!k) return null;
+var i = k.index;
+while (i > 0) {
+if (isStill( k.time - thisComp.frameDuration )) return k;
+k = key(k.index - 1);
+}
+return k;
+}
 function isAfterLastKey() {
 if (numKeys == 0) return false;
 var nKey = nearestKey(time);
 return nKey.time <= time && nKey.index == numKeys;
+}
+function isKeyTop(k, axis) {
+var prevSpeed = velocityAtTime(k.time - thisComp.frameDuration/2);
+var nextSpeed = velocityAtTime(k.time + thisComp.frameDuration/2);
+if (value instanceof Array) {
+prevSpeed = prevSpeed[axis];
+nextSpeed = nextSpeed[axis];
+}
+if (Math.abs(prevSpeed) < 0.01 || Math.abs(nextSpeed) < 0.01) return true;
+return prevSpeed * nextSpeed < 0;
 }
 function bounce(t, elasticity, damping, vAtTime) {
 if (elasticity == 0) return value;
@@ -725,6 +780,10 @@ return r;
 }
 function gaussian( value, min, max, center, fwhm)
 {
+if (typeof min === 'undefined') min = 0;
+if (typeof max === 'undefined') max = 1;
+if (typeof center === 'undefined') center = 0;
+if (typeof fwhm === 'undefined') fwhm = 1;
 if (fwhm === 0 && value == center) return max;
 else if (fwhm === 0) return 0;
 var exp = -4 * Math.LN2;
@@ -735,6 +794,10 @@ return result * (max-min) + min;
 }
 function inverseGaussian ( v, min, max, center, fwhm)
 {
+if (typeof min === 'undefined') min = 0;
+if (typeof max === 'undefined') max = 1;
+if (typeof center === 'undefined') center = 0;
+if (typeof fwhm === 'undefined') fwhm = 1;
 if (v == 1) return [center, center];
 if (v === 0) return [center + fwhm/2, center - fwhm/2];
 if (fwhm === 0) return [center, center];
@@ -746,6 +809,10 @@ return [ result + center, -result + center ];
 }
 function inverseLogistic ( v, midValue, min, max, rate)
 {
+if (typeof midValue === 'undefined') midValue = 0;
+if (typeof min === 'undefined') min = 0;
+if (typeof max === 'undefined') max = 1;
+if (typeof rate === 'undefined') rate = 1;
 if (v == min) return 0;
 return midValue - Math.log( (max-min)/(v-min) - 1) / rate;
 }
@@ -763,6 +830,10 @@ return true;
 }
 function logistic( value, midValue, min, max, rate)
 {
+if (typeof midValue === 'undefined') midValue = 0;
+if (typeof min === 'undefined') min = 0;
+if (typeof max === 'undefined') max = 1;
+if (typeof rate === 'undefined') rate = 1;
 var exp = -rate*(value - midValue);
 var result = 1 / (1 + Math.pow(Math.E, exp));
 return result * (max-min) + min;
@@ -917,25 +988,24 @@ function isPosition(prop) {
 return  prop === position;
 }
 function isSpatial(prop) {
+if (typeof prop === 'undefined') prop = thisProperty;
 if (!(prop.value instanceof Array)) return false;
 if (prop.value.length != 2 && prop.value.length != 3) return false;
 try { if (typeof prop.speed !== "undefined") return true; }
 catch (e) { return false; }
 }
 function isStill(t, threshold) {
-var d = valueAtTime(t-.001) - valueAtTime(t + .001 );
+if (typeof t === 'undefined') t = time;
+if (typeof threshold === 'undefined') threshold = 0.01;
+if (typeof axis === 'undefined') axis = -1;
+var d = valueAtTime(t) - valueAtTime(t + thisComp.frameDuration*.1);
 if (d instanceof Array) {
+if (axis >= 0) return Math.abs(d[i]) >= threshold;
 for (var i = 0; i < d.length; i++) {
-d[i] = Math.abs(d[i]);
-if (d[i] > threshold) {
-return false;
-}
+if (Math.abs(d[i]) >= threshold) return false;
 }
 return true;
-} else {
-d = Math.abs(d);
-return d <= threshold;
-}
+} else return Math.abs(d) < threshold;
 }
 function lastActiveTime( prop, t ) {
 if ( prop.valueAtTime(t) ) return t;
@@ -1063,6 +1133,8 @@ function getLayerCompPos( t, l ) {
 return l.toComp( l.anchorPoint, t );
 }
 function getLayerWorldPos(t, l) {
+if (typeof t === 'undefined') t = time;
+if (typeof l === 'undefined') l = thisLayer;
 return l.toWorld(l.anchorPoint, t);
 }
 function getLayerWorldSpeed(t, l) {
@@ -1118,6 +1190,8 @@ function getPropWorldSpeed(t, prop) {
 return length(getPropWorldVelocity(t, prop));
 }
 function getPropWorldValue(t, prop) {
+if (typeof t === 'undefined') t = time;
+if (typeof prop === 'undefined') prop = thisProperty;
 if (isPosition(prop)) return getLayerWorldPos(t, thisLayer);
 return thisLayer.toWorld(prop.valueAtTime(t), t);
 }

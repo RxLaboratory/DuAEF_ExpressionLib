@@ -4,11 +4,12 @@
   * @classdesc Fuzzy Logics for expressions. See {@link https://github.com/Nico-Duduf/DuFuzzyLogic} for more explanations
   * @author Nicolas "Duduf" Dufresne
   * @license GPL-v3
-  * @copyright 2020-2021 Nicolas Dufresne and contributors
+  * @copyright 2020-2022 Nicolas Dufresne and contributors
   * @requires logistic
   * @requires inverseLogistic
   * @requires gaussian
   * @requires inverseGaussian
+  * @requires mean
 */
 
 function FuzzySet( name, valueNot, valueIS, shape, shapeAbove, plateauMin, plateauMax)
@@ -244,7 +245,8 @@ FuzzyValue.prototype = {
       // Check if this set is already here
       for (var i = 0, num = this.sets.length; i < num; i++)
       {
-          if (fuzzyset.name == this.sets[i].name) 
+          var s = this.sets[i].fuzzyset;
+          if (fuzzyset.name == s.name) 
           {
               this.sets[i].quantifiers.push(quantifier);
               this.sets[i].veracities.push(v);
@@ -253,9 +255,11 @@ FuzzyValue.prototype = {
       }
   
       //otherwise, add it
-      fuzzyset.quantifiers = [quantifier];
-      fuzzyset.veracities = [v];
-      this.sets.push( fuzzyset );
+      var s = {};
+      s.fuzzyset = fuzzyset;
+      s.quantifiers = [quantifier];
+      s.veracities = [v];
+      this.sets.push( s );
   },
   
   crispify: function ( clearSets )
@@ -277,14 +281,14 @@ FuzzyValue.prototype = {
       var sumWeights = 0;
       for (var i = 0, num = this.sets.length; i < num; i++)
       {
-          var fuzzyset = this.sets[i];
-          for( var j = 0, numV = fuzzyset.veracities.length; j < numV; j++)
+          var s = this.sets[i];
+          for( var j = 0, numV = s.veracities.length; j < numV; j++)
           {
               // the veracity
-              var v = fuzzyset.veracities[j];
-              var q = fuzzyset.quantifiers[j];
+              var v = s.veracities[j];
+              var q = s.quantifiers[j];
               // the corresponding values
-              var vals = fuzzyset.crispify( q, v );
+              var vals = s.fuzzyset.crispify( q, v );
               var val;
               var ver;
   
@@ -293,6 +297,7 @@ FuzzyValue.prototype = {
               ver = v.veracity;
   
               sumWeights += ver;
+              
   
               // generate report
               if (this.reportEnabled)
@@ -303,11 +308,10 @@ FuzzyValue.prototype = {
                   }
   
                   var reportRule = [];
-                  reportRule.push( "Rule #" + v.ruleNum +": Set " + fuzzyset.name);
+                  reportRule.push( "Rule #" + v.ruleNum +": Set " + fuzzyset.toString() + " (" + q.toString() + ")" );
                   reportRule.push( "Gives val: " + Math.round(val*1000)/1000 + " from these values: [ " + vals.join(", ") + " ]");
                   reportRule.push( "With a veracity of: " + Math.round(ver*1000)/1000 );
                   reportRule.number = v.ruleNum;
-                  
                   this.report.push( reportRule );
               }
           }
@@ -317,11 +321,7 @@ FuzzyValue.prototype = {
   
   
       //sort the report
-      if (this.reportEnabled)
-      {
-        this.report.sort(ruleSorter);
-        this.report.push(["\nFinal value is: " + crisp]);
-      }
+      if (this.reportEnabled) this.report.sort(ruleSorter);
   
       if (clearSets)
       {
@@ -473,6 +473,7 @@ FuzzyVeracity.prototype = {
 function FuzzyLogic( )
 {
     this.veracity = new FuzzyVeracity(0);
+    this.sets = [];
 }
 
 FuzzyLogic.prototype = {
