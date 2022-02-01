@@ -419,6 +419,41 @@ return new FuzzyVeracity( Math.pow(v, p) );
 }
 return qObj;
 }
+function FuzzyVeracity( v, f )
+{
+if (typeof f === 'undefined') f = 1;
+this.veracity = v;
+this.factor = f;
+}
+FuzzyVeracity.prototype = {
+NEGATE: function() {
+return new FuzzyVeracity(1 - this.veracity, 0.5);
+},
+AND: function(other) {
+var x = this.veracity * this.factor;
+var y = other.veracity * other.factor;
+var v = x*y;
+return new FuzzyVeracity( v );
+},
+OR: function(other) {
+var x = this.veracity * this.factor;
+var y = other.veracity * other.factor;
+var v = x + y - x*y;
+return new FuzzyVeracity( v );
+},
+DIFFERENT: function(other) {
+var x = this.veracity * this.factor;
+var y = other.veracity * other.factor;
+var v = x+y - 2*x*y;
+return new FuzzyVeracity( v );
+},
+EQUALS: function(other) {
+var x = this.veracity * this.factor;
+var y = other.veracity * other.factor;
+var v = 1-x-y + 2*x*y;
+return new FuzzyVeracity( v );
+},
+};
 function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {
 if (arguments.length !== 5 && arguments.length !== 6) return (value1+value2)/2;
 var a = value2 - value1;
