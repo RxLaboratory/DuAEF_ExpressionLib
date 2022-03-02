@@ -14,6 +14,12 @@
  */
 function expInterpolation(t, tMin, tMax, vMin, vMax, rate)
 {
+	if (typeof tMin === 'undefined') tMin = 0;
+   if (typeof tMax === 'undefined') tMax = 1;
+   if (typeof value1 === 'undefined') value1 = 0;
+   if (typeof value2 === 'undefined') value2 = 0;
+   if (typeof rate === 'undefined') rate = 1;
+   
     if (rate == 0) return linearExtrapolation(t, tMin, tMax, vMin, vMax);
 	// Offset t to be in the range 0-Max
 	tMax = ( tMax - tMin ) * rate;

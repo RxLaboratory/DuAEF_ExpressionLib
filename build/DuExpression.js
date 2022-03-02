@@ -455,6 +455,11 @@ return new FuzzyVeracity( v );
 },
 };
 function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {
+if (typeof tMin === 'undefined') tMin = 0;
+if (typeof tMax === 'undefined') tMax = 1;
+if (typeof value1 === 'undefined') value1 = 0;
+if (typeof value2 === 'undefined') value2 = 0;
+if (typeof bezierPoints === 'undefined') bezierPoints = [0.33,0.0,0.66,1.0];
 if (arguments.length !== 5 && arguments.length !== 6) return (value1+value2)/2;
 var a = value2 - value1;
 var b = tMax - tMin;
@@ -480,6 +485,11 @@ return d * (l + d * (m + d * n));
 }
 function expInterpolation(t, tMin, tMax, vMin, vMax, rate)
 {
+if (typeof tMin === 'undefined') tMin = 0;
+if (typeof tMax === 'undefined') tMax = 1;
+if (typeof value1 === 'undefined') value1 = 0;
+if (typeof value2 === 'undefined') value2 = 0;
+if (typeof rate === 'undefined') rate = 1;
 if (rate == 0) return linearExtrapolation(t, tMin, tMax, vMin, vMax);
 tMax = ( tMax - tMin ) * rate;
 t = ( t - tMin ) * rate;
@@ -489,6 +499,11 @@ return linearExtrapolation(t, 1, m, vMin, vMax);
 }
 function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )
 {
+if (typeof tMin === 'undefined') tMin = 0;
+if (typeof tMax === 'undefined') tMax = 1;
+if (typeof value1 === 'undefined') value1 = 0;
+if (typeof value2 === 'undefined') value2 = 0;
+if (typeof rate === 'undefined') rate = 0;
 if (t != tMin)
 {
 var newValue1 = gaussianInterpolation( tMin, tMin, tMax, value1, value2, rate );
@@ -530,6 +545,11 @@ return value1 + (( t - tMin) / (tMax - tMin)) * (value2 - value1);
 }
 function logInterpolation(t, tMin, tMax, vMin, vMax, rate)
 {
+if (typeof tMin === 'undefined') tMin = 0;
+if (typeof tMax === 'undefined') tMax = 1;
+if (typeof value1 === 'undefined') value1 = 0;
+if (typeof value2 === 'undefined') value2 = 0;
+if (typeof rate === 'undefined') rate = 1;
 if (rate == 0) return linearExtrapolation(t, tMin, tMax, vMin, vMax);
 tMax = ( tMax - tMin ) * rate + 1;
 t = ( t - tMin ) * rate + 1;
@@ -540,6 +560,12 @@ return linearExtrapolation(v, 0, m, vMin, vMax);
 }
 function logisticInterpolation( t, tMin, tMax, value1, value2, rate, tMid )
 {
+if (typeof tMin === 'undefined') tMin = 0;
+if (typeof tMax === 'undefined') tMax = 1;
+if (typeof value1 === 'undefined') value1 = 0;
+if (typeof value2 === 'undefined') value2 = 0;
+if (typeof rate === 'undefined') rate = 1;
+if (typeof tMid === 'undefined') tMid = (tMin+tMax)/2;
 if (rate == 0) return linearExtrapolation(t, tMin, tMax, value1, value2);
 t = logistic( t, tMid, tMin, tMax, rate);
 var m = logistic( tMin, tMid, tMin, tMax, rate);

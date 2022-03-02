@@ -1,4 +1,4 @@
-/**
+undefined/**
   * Fuzzy Logics for expressions. See {@link https://github.com/Nico-Duduf/DuFuzzyLogic} for more explanations
   * @class
   * @classdesc Fuzzy Logics for expressions. See {@link https://github.com/Nico-Duduf/DuFuzzyLogic} for more explanations
@@ -610,6 +610,12 @@ FuzzyVeracity.prototype = {
  * @return {number} the value.
  */
 function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {
+    if (typeof tMin === 'undefined') tMin = 0;
+    if (typeof tMax === 'undefined') tMax = 1;
+    if (typeof value1 === 'undefined') value1 = 0;
+    if (typeof value2 === 'undefined') value2 = 0;
+    if (typeof bezierPoints === 'undefined') bezierPoints = [0.33,0.0,0.66,1.0];
+
     if (arguments.length !== 5 && arguments.length !== 6) return (value1+value2)/2;
     var a = value2 - value1;
     var b = tMax - tMin;
@@ -652,6 +658,12 @@ function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {
  */
 function expInterpolation(t, tMin, tMax, vMin, vMax, rate)
 {
+	if (typeof tMin === 'undefined') tMin = 0;
+   if (typeof tMax === 'undefined') tMax = 1;
+   if (typeof value1 === 'undefined') value1 = 0;
+   if (typeof value2 === 'undefined') value2 = 0;
+   if (typeof rate === 'undefined') rate = 1;
+   
     if (rate == 0) return linearExtrapolation(t, tMin, tMax, vMin, vMax);
 	// Offset t to be in the range 0-Max
 	tMax = ( tMax - tMin ) * rate;
@@ -678,6 +690,12 @@ function expInterpolation(t, tMin, tMax, vMin, vMax, rate)
  */
 function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )
 {
+    if (typeof tMin === 'undefined') tMin = 0;
+    if (typeof tMax === 'undefined') tMax = 1;
+    if (typeof value1 === 'undefined') value1 = 0;
+    if (typeof value2 === 'undefined') value2 = 0;
+    if (typeof rate === 'undefined') rate = 0;
+
     // fix small bump at first value
     if (t != tMin)
     {
@@ -757,6 +775,12 @@ function linearExtrapolation( t, tMin, tMax, value1, value2 )
  */
  function logInterpolation(t, tMin, tMax, vMin, vMax, rate)
  {
+   if (typeof tMin === 'undefined') tMin = 0;
+   if (typeof tMax === 'undefined') tMax = 1;
+   if (typeof value1 === 'undefined') value1 = 0;
+   if (typeof value2 === 'undefined') value2 = 0;
+   if (typeof rate === 'undefined') rate = 1;
+
     if (rate == 0) return linearExtrapolation(t, tMin, tMax, vMin, vMax);
     // Offset t to be in the range 0-Max
     tMax = ( tMax - tMin ) * rate + 1;
@@ -771,8 +795,7 @@ function linearExtrapolation( t, tMin, tMax, value1, value2 )
 
 /**
  * Interpolates a value with a logistic (sigmoid) function.<br />
- * This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.<br />
- * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.
  * @function
  * @param {number} t The value to interpolate
  * @param {number} [tMin=0] The minimum value of the initial range
@@ -780,13 +803,20 @@ function linearExtrapolation( t, tMin, tMax, value1, value2 )
  * @param {number} [value1=0] The minimum value of the interpolated result
  * @param {number} [value2=1] The maximum value of the interpolated result
  * @param {number} [rate=1] The raising speed in the range [0, inf].
- * @param {number} [tMid=0.5] The t value at which the interpolated value should be half way.
- * @return {number} the value.
+ * @param {number} [tMid] The t value at which the interpolated value should be half way. By default, (tMin+tMax)/2
+ * @return {number} the value.s
  * @requires logistic
  * @requires linearExtrapolation
  */
 function logisticInterpolation( t, tMin, tMax, value1, value2, rate, tMid )
 {
+    if (typeof tMin === 'undefined') tMin = 0;
+    if (typeof tMax === 'undefined') tMax = 1;
+    if (typeof value1 === 'undefined') value1 = 0;
+    if (typeof value2 === 'undefined') value2 = 0;
+    if (typeof rate === 'undefined') rate = 1;
+    if (typeof tMid === 'undefined') tMid = (tMin+tMax)/2;
+
     if (rate == 0) return linearExtrapolation(t, tMin, tMax, value1, value2);
     t = logistic( t, tMid, tMin, tMax, rate);
     
