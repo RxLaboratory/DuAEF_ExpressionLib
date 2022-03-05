@@ -839,6 +839,13 @@ r.push(p1[i] + p2[i] * w);
 }
 return r;
 }
+if (typeof Math.cbrt === 'undefined') {
+Math.cbrt = (function(pow) {
+return function cbrt(x){
+return x < 0 ? -pow(-x, 1/3) : pow(x, 1/3);
+};
+})(Math.pow);
+}
 function gaussian( value, min, max, center, fwhm)
 {
 if (typeof min === 'undefined') min = 0;
