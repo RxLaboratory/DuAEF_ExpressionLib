@@ -1062,18 +1062,18 @@ if (prop.value.length != 2 && prop.value.length != 3) return false;
 try { if (typeof prop.speed !== "undefined") return true; }
 catch (e) { return false; }
 }
-function isStill(t, threshold) {
+function isStill(t, threshold, axis) {
 if (typeof t === 'undefined') t = time;
 if (typeof threshold === 'undefined') threshold = 0.01;
 if (typeof axis === 'undefined') axis = -1;
 var d = valueAtTime(t) - valueAtTime(t + thisComp.frameDuration*.1);
 if (d instanceof Array) {
-if (axis >= 0) return Math.abs(d[i]) >= threshold;
+if (axis >= 0) return Math.abs(d[axis]) <= threshold;
 for (var i = 0; i < d.length; i++) {
 if (Math.abs(d[i]) >= threshold) return false;
 }
 return true;
-} else return Math.abs(d) < threshold;
+} else return Math.abs(d) <= threshold;
 }
 function lastActiveTime( prop, t ) {
 if ( prop.valueAtTime(t) ) return t;

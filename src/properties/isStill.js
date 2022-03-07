@@ -6,7 +6,7 @@
  * @param {number} [axis=-1] The axis to check. If < 0, will check all axis.
  * @return {boolean} true if the property does not vary.
  */
-function isStill(t, threshold) {
+function isStill(t, threshold, axis) {
 	if (typeof t === 'undefined') t = time;
 	if (typeof threshold === 'undefined') threshold = 0.01;
 	if (typeof axis === 'undefined') axis = -1;
@@ -15,11 +15,11 @@ function isStill(t, threshold) {
   
 	if (d instanceof Array) {
 	  // Check given axis
-	  if (axis >= 0) return Math.abs(d[i]) >= threshold;
+	  if (axis >= 0) return Math.abs(d[axis]) <= threshold;
 	  // Check all axis
 	  for (var i = 0; i < d.length; i++) {
 		if (Math.abs(d[i]) >= threshold) return false;
 	  }
 	  return true;
-	} else return Math.abs(d) < threshold;
+	} else return Math.abs(d) <= threshold;
   }
