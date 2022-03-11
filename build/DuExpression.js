@@ -1198,7 +1198,10 @@ matrix.scale( group.scale.value / 100 );
 return matrix;
 }
 function getLayerCompPos( t, l ) {
-return l.toComp( l.anchorPoint, t );
+if (typeof t === 'undefined') t = time;
+if (typeof l === 'undefined') l = thisLayer;
+if (l.hasParent) return l.parent.toComp(l.position, t);
+return l.toComp(l.anchorPoint, t);
 }
 function getLayerWorldPos(t, l) {
 if (typeof t === 'undefined') t = time;

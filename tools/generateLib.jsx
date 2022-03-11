@@ -41,7 +41,7 @@
 
     //create content
     var jsContent = '';
-    var jsFUllContent = '';
+    var jsFullContent = '';
     // get jsxinc header
     var jxincHeaderFile = new File(expressionFolder.absoluteURI + "/" + "DuExpression_scripting_header.jsxinc" );
     jxincHeaderFile.open('r');
@@ -61,6 +61,7 @@
         for (var i = 0, num = expressionFiles.length; i < num; i++)
         {
             var file = expressionFiles[i];
+            if (file.name == 'build') continue;
             if (file instanceof Folder)
             {
                 getExpresssions( file );
