@@ -2105,7 +2105,8 @@ function getLayerCompPos( t, l ) {
 function getLayerWorldPos(t, l) {
 	if (typeof t === 'undefined') t = time;
 	if (typeof l === 'undefined') l = thisLayer;
-	return l.toWorld(l.anchorPoint, t);
+	if (l.hasParent) return l.parent.toWorld(l.position, t);
+	return l.position.valueAtTime(t);
 }
 
 

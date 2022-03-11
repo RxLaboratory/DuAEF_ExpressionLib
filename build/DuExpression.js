@@ -1203,7 +1203,8 @@ return l.toComp( l.anchorPoint, t );
 function getLayerWorldPos(t, l) {
 if (typeof t === 'undefined') t = time;
 if (typeof l === 'undefined') l = thisLayer;
-return l.toWorld(l.anchorPoint, t);
+if (l.hasParent) return l.parent.toWorld(l.position, t);
+return l.position.valueAtTime(t);
 }
 function getLayerWorldSpeed(t, l) {
 return length(getWorldVelocity(t, l));
