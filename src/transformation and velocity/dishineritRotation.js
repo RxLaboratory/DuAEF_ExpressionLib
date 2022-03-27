@@ -1,7 +1,6 @@
 /**
  * Removes the ancestors rotation from the rotation of a layer.
  * This is very useful to make a layer keep its orientation without being influenced by its parents.<br />
- * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @example
  * //in a rotation property, just include the function and use:
@@ -17,6 +16,7 @@
  * @requires sign
  */
 function dishineritRotation( l ) {
+    if (typeof l === 'undefined') l = thisLayer;
     var r = l.rotation.value;
     while ( l.hasParent ) {
         l = l.parent;
