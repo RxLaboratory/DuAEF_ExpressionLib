@@ -924,6 +924,12 @@ r.push(p[i] * w);
 return r;
 }
 function normalizeWeights(weights, sum) {
+if(typeof sum === 'undefined') {
+sum = 0;
+for (var i = 0, n = weights.length; i < n; i++) {
+sum += weights[i];
+}
+}
 if (sum == 1 || sum == 0) return weights;
 var o = 1 - sum;
 var normalized = [];
@@ -1134,6 +1140,7 @@ noiseValue = noiseValue * (quantity / 100);
 return val * ( noiseValue + 1 );
 }
 function dishineritRotation( l ) {
+if (typeof l === 'undefined') l = thisLayer;
 var r = l.rotation.value;
 while ( l.hasParent ) {
 l = l.parent;
@@ -1202,6 +1209,13 @@ if (typeof t === 'undefined') t = time;
 if (typeof l === 'undefined') l = thisLayer;
 if (l.hasParent) return l.parent.toComp(l.position, t);
 return l.toComp(l.anchorPoint, t);
+}
+function getLayerDistance(other, origin, t) {
+if (typeof origin === 'undefined') origin = thisLayer;
+if (typeof t === 'undefined') t = time;
+var p1 = getLayerWorldPos(t, other);
+var p2 = getLayerWorldPos(t, origin);
+return length(p1, p2);
 }
 function getLayerWorldPos(t, l) {
 if (typeof t === 'undefined') t = time;

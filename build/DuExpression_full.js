@@ -1509,10 +1509,16 @@ function multPoints(p, w) {
  * Normalizes a list of weights so their sum equals 1.0
  * @function
  * @param {float[]} weights The weights to normalize
- * @param {float} sum The sum of the weights
+ * @param {float} [sum] The sum of the weights; provide it if it's already computed to improve performance.
  * @returns {float[]} The normalized weights
  */
 function normalizeWeights(weights, sum) {
+    if(typeof sum === 'undefined') {
+        sum = 0;
+        for (var i = 0, n = weights.length; i < n; i++) {
+          sum += weights[i];
+        }
+      }
     if (sum == 1 || sum == 0) return weights;
     var o = 1 - sum;
     var normalized = [];
@@ -1934,7 +1940,6 @@ function addNoise( val, quantity ) {
 /**
  * Removes the ancestors rotation from the rotation of a layer.
  * This is very useful to make a layer keep its orientation without being influenced by its parents.<br />
- * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @example
  * //in a rotation property, just include the function and use:
@@ -1950,6 +1955,7 @@ function addNoise( val, quantity ) {
  * @requires sign
  */
 function dishineritRotation( l ) {
+    if (typeof l === 'undefined') l = thisLayer;
     var r = l.rotation.value;
     while ( l.hasParent ) {
         l = l.parent;
@@ -2096,6 +2102,25 @@ function getLayerCompPos( t, l ) {
     if (l.hasParent) return l.parent.toComp(l.position, t);
 	return l.toComp(l.anchorPoint, t);
 }
+
+/**
+ * Gets the world position of a layer.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * @function
+ * @param {Layer} other The other layer
+ * @param {Layer} [origin=thisLayer] The origin
+ * @param {number} [t=time] Time from when to get the position
+ * @return {number[]} The world position
+ * @requires getLayerWorldPos
+ */
+function getLayerDistance(other, origin, t) {
+    if (typeof origin === 'undefined') origin = thisLayer;
+    if (typeof t === 'undefined') t = time;
+    var p1 = getLayerWorldPos(t, other);
+    var p2 = getLayerWorldPos(t, origin);
+	return length(p1, p2);
+}
+
 
 /**
  * Gets the world position of a layer.
