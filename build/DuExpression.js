@@ -454,6 +454,50 @@ var v = 1-x-y + 2*x*y;
 return new FuzzyVeracity( v );
 },
 };
+function animate(ks, loopOut, loopIn) {
+if (ks.length == 0) return value;
+if (ks.length == 1) return ks[0].value;
+if (typeof loopOut === 'undefined') loopOut = 'none';
+if (typeof loopIn === 'undefined') loopIn = 'none';
+var startTime = ks[0].time;
+var endTime = ks[ks.length-1].time;
+var duration = endTime - startTime;
+var ct = time;
+if ( time >= endTime )
+{
+if ( loopOut == 'cycle' ) ct = ((ct - startTime) % duration) + startTime;
+else if ( loopOut == 'pingpong' ) {
+var d = duration * 2;
+ct = (ct-startTime) % d;
+if (ct > duration) ct = d - ct;
+ct += startTime;
+}
+}
+else if ( time < startTime) {
+if ( loopIn == 'cycle' ) ct = ((ct - startTime) % duration) + startTime + duration;
+else if ( loopIn == 'pingpong' ) {
+var d = duration * 2;
+ct += d;
+ct = (ct-startTime) % d;
+if (ct > duration) ct = d - ct;
+ct += startTime;
+}
+}
+for (var i = 0; i < ks.length; i++) {
+var k = ks[i];
+if (k.time > ct && i == 0) return k.value;
+if (k.time == ct) return k.value;
+if (k.time < ct) {
+if (i == ks.length - 1) return k.value;
+var nk = ks[i+1];
+if (nk.time < ct) continue;
+if (typeof k.interpolation === 'undefined') k.interpolation = linear;
+if (typeof k.params === 'undefined') return k.interpolation(ct, k.time, nk.time, k.value, nk.value);
+else return k.interpolation(ct, k.time, nk.time, k.value, nk.value, k.params);
+}
+}
+return value;
+}
 function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {
 if (typeof tMin === 'undefined') tMin = 0;
 if (typeof tMax === 'undefined') tMax = 1;

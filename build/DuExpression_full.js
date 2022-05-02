@@ -597,6 +597,82 @@ FuzzyVeracity.prototype = {
 };
 
 /**
+ * Animates the property using the given keyframes
+ * @function
+ * @param {Object[]} keyframes The keyframes. An object with four properties:<br/>
+ * <code>value</code> The value of the keyframe<br />
+ * <code>time</code> The time of the keyframe<br />
+ * <code>interpolation</code> (optional. Default: linear) A function taking 5 arguments to interpolate between this keyframe and the next one<br />
+ * <code>params</code> (optional.) A sixth argument passed to the interpolation function. To be used with DuAEF interpolations.<br />
+ * Note that the keyframes <strong>must be sorted</strong>. The function does not sort them, as it would have a bad impact on performance.
+ * @param {string} [loopOut='none'] One of 'none', 'cycle', 'pingpong'.
+ * @param {string} [loopIn='none'] One of 'none', 'cycle', 'pingpong'.
+ * @example
+ * var keyframes = [
+ *    {value: 0, time: 1, interpolation: linear},
+ *    {value: 180, time: 2, interpolation: gaussianInterpolation, params: -0.5}, //You need to include the gaussianInterpolation function from DuAEF
+ *    {value: 250, time: 4, interpolation: ease},
+ *    {value: 360, time: 5},
+ * ];
+ * animate(keyframes, 'cycle', 'pingpong');
+ * @return {number} the animated value.
+ */
+ function animate(ks, loopOut, loopIn) {
+    if (ks.length == 0) return value;
+    if (ks.length == 1) return ks[0].value;
+    if (typeof loopOut === 'undefined') loopOut = 'none';
+    if (typeof loopIn === 'undefined') loopIn = 'none';
+    // times
+    var startTime = ks[0].time;
+    var endTime = ks[ks.length-1].time;
+    var duration = endTime - startTime;
+    // Current time
+    var ct = time;
+    // Loop out
+    if ( time >= endTime )
+    {
+        if ( loopOut == 'cycle' ) ct = ((ct - startTime) % duration) + startTime;
+        else if ( loopOut == 'pingpong' ) {
+            var d = duration * 2;
+            ct = (ct-startTime) % d;
+            if (ct > duration) ct = d - ct;
+            ct += startTime;
+        }
+    }
+    // Loop in
+    else if ( time < startTime) {
+        if ( loopIn == 'cycle' ) ct = ((ct - startTime) % duration) + startTime + duration;
+        else if ( loopIn == 'pingpong' ) {
+            var d = duration * 2;
+            ct += d;
+            ct = (ct-startTime) % d;
+            if (ct > duration) ct = d - ct;
+            ct += startTime;
+        }
+    }
+    // Find the right keyframe
+    for (var i = 0; i < ks.length; i++) {
+        var k = ks[i];
+        if (k.time > ct && i == 0) return k.value;
+        if (k.time == ct) return k.value;
+        if (k.time < ct) {
+            // it was the last one
+            if (i == ks.length - 1) return k.value;
+            // The next key
+            var nk = ks[i+1];
+            // it's not the current keyframe
+            if (nk.time < ct) continue;
+            if (typeof k.interpolation === 'undefined') k.interpolation = linear;
+            // interpolate
+            if (typeof k.params === 'undefined') return k.interpolation(ct, k.time, nk.time, k.value, nk.value);
+            else return k.interpolation(ct, k.time, nk.time, k.value, nk.value, k.params);
+        }
+    }
+    // just in case...
+    return value;
+}
+
+/**
  * Interpolates a value with a bezier curve.<br />
  * This method can replace <code>linear()</code> and <code>ease()</code> with a custom bézier interpolation.
  * @function
@@ -773,25 +849,25 @@ function linearExtrapolation( t, tMin, tMax, value1, value2 )
  * @return {number} the value.
  * @requires linearExtrapolation
  */
- function logInterpolation(t, tMin, tMax, vMin, vMax, rate)
- {
-   if (typeof tMin === 'undefined') tMin = 0;
-   if (typeof tMax === 'undefined') tMax = 1;
-   if (typeof value1 === 'undefined') value1 = 0;
-   if (typeof value2 === 'undefined') value2 = 0;
-   if (typeof rate === 'undefined') rate = 1;
+function logInterpolation(t, tMin, tMax, vMin, vMax, rate)
+{
+  if (typeof tMin === 'undefined') tMin = 0;
+  if (typeof tMax === 'undefined') tMax = 1;
+  if (typeof value1 === 'undefined') value1 = 0;
+  if (typeof value2 === 'undefined') value2 = 0;
+  if (typeof rate === 'undefined') rate = 1;
 
-    if (rate == 0) return linearExtrapolation(t, tMin, tMax, vMin, vMax);
-    // Offset t to be in the range 0-Max
-    tMax = ( tMax - tMin ) * rate + 1;
-    t = ( t - tMin ) * rate + 1;
-    if (t <= 1) return vMin;
-    // Compute the max
-    var m = Math.log(tMax);
-    // Compute current value
-    var v = Math.log(t);
-    return linearExtrapolation(v, 0, m, vMin, vMax);
- }
+  if (rate == 0) return linearExtrapolation(t, tMin, tMax, vMin, vMax);
+  // Offset t to be in the range 0-Max
+  tMax = ( tMax - tMin ) * rate + 1;
+  t = ( t - tMin ) * rate + 1;
+  if (t <= 1) return vMin;
+  // Compute the max
+  var m = Math.log(tMax);
+  // Compute current value
+  var v = Math.log(t);
+  return linearExtrapolation(v, 0, m, vMin, vMax);
+}
 
 /**
  * Interpolates a value with a logistic (sigmoid) function.<br />
