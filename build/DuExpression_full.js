@@ -607,6 +607,7 @@ FuzzyVeracity.prototype = {
  * Note that the keyframes <strong>must be sorted</strong>. The function does not sort them, as it would have a bad impact on performance.
  * @param {string} [loopOut='none'] One of 'none', 'cycle', 'pingpong'.
  * @param {string} [loopIn='none'] One of 'none', 'cycle', 'pingpong'.
+ * @param {float} [time=time] Use this to control how time flows.
  * @example
  * var keyframes = [
  *    {value: 0, time: 1, interpolation: linear},
@@ -617,19 +618,18 @@ FuzzyVeracity.prototype = {
  * animate(keyframes, 'cycle', 'pingpong');
  * @return {number} the animated value.
  */
- function animate(ks, loopOut, loopIn) {
+ function animate(ks, loopOut, loopIn, ct) {
     if (ks.length == 0) return value;
     if (ks.length == 1) return ks[0].value;
     if (typeof loopOut === 'undefined') loopOut = 'none';
     if (typeof loopIn === 'undefined') loopIn = 'none';
+	if (typeof ct === 'undefined') ct = time;
     // times
     var startTime = ks[0].time;
     var endTime = ks[ks.length-1].time;
     var duration = endTime - startTime;
-    // Current time
-    var ct = time;
     // Loop out
-    if ( time >= endTime )
+    if ( ct >= endTime )
     {
         if ( loopOut == 'cycle' ) ct = ((ct - startTime) % duration) + startTime;
         else if ( loopOut == 'pingpong' ) {
@@ -640,7 +640,7 @@ FuzzyVeracity.prototype = {
         }
     }
     // Loop in
-    else if ( time < startTime) {
+    else if ( ct < startTime) {
         if ( loopIn == 'cycle' ) ct = ((ct - startTime) % duration) + startTime + duration;
         else if ( loopIn == 'pingpong' ) {
             var d = duration * 2;
@@ -662,7 +662,7 @@ FuzzyVeracity.prototype = {
             var nk = ks[i+1];
             // it's not the current keyframe
             if (nk.time < ct) continue;
-            if (typeof k.interpolation === 'undefined') k.interpolation = linear;
+            if (typeof k.interpolation === 'undefined') return linear(ct, k.time, nk.time, k.value, nk.value);
             // interpolate
             if (typeof k.params === 'undefined') return k.interpolation(ct, k.time, nk.time, k.value, nk.value);
             else return k.interpolation(ct, k.time, nk.time, k.value, nk.value, k.params);
