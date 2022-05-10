@@ -582,6 +582,19 @@ o = 1-easeOut(rate, -0.025, 0.7, 0.415, 0.15);
 }
 return [i,0,o,1];
 }
+function limit(val, min, max, softness) {
+min = min + softness;
+max = max - softness;
+if ( val > max ) {
+if (softness == 0) return max;
+return max + softness - softness / ( 1 + (val - max)/softness);
+}
+if (val < min) {
+if (softness == 0) return min;
+return min - softness + softness / (1 + (min - val)/softness);
+}
+return val;
+}
 function linearExtrapolation( t, tMin, tMax, value1, value2 )
 {
 if (tMax == tMin) return (value1+value2) / 2;

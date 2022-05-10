@@ -741,6 +741,30 @@ DuAEExpression.Library["gaussianRateToBezierPoints"].expression = ['function gau
 DuAEExpression.Library["gaussianRateToBezierPoints"].requirements = [];
 
 /**
+ * Clamps a value, but with a smooth interpolation according to a softness parameter
+ * @param {number} value The value to limit
+ * @param {number} [min=0] The minimum value
+ * @param {number} [max=1] The maximum value
+ * @param {number} [softness=0] The softness, a value corresponding value, from which the interpolation begins to slow down
+ */
+DuAEExpression.Library["limit"] = {};
+DuAEExpression.Library["limit"].expression = ['function limit(val, min, max, softness) {',
+	'min = min + softness;',
+	'max = max - softness;',
+	'if ( val > max ) {',
+	'if (softness == 0) return max;',
+	'return max + softness - softness / ( 1 + (val - max)/softness);',
+	'}',
+	'if (val < min) {',
+	'if (softness == 0) return min;',
+	'return min - softness + softness / (1 + (min - val)/softness);',
+	'}',
+	'return val;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["limit"].requirements = [];
+
+/**
  * Interpolates a value with a linear function, but also extrapolates it outside of known values.<br />
  * This method can replace <code>linear()</code>, adding extrapolation.<br />
  * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
