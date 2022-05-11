@@ -1079,13 +1079,8 @@ return path;
 }
 function checkDuikEffect(fx, duikMatchName) {
 if (fx.numProperties  < 3) return false;
-if (!!$.engineName) {
-if ( fx(2).name != duikMatchName ) return false;
-}
-else {
 try { if (fx(2).name != duikMatchName) return false; }
 catch (e) { return false; }
-}
 return true;
 }
 function checkEffect(fx, propIndex, propName) {
