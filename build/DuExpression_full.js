@@ -1515,6 +1515,27 @@ if (typeof Math.cbrt === 'undefined') {
   
 
 /**
+    * Gets the distance of a point to a line
+    * @function
+    * @name distanceToLine
+    * @param {float[]} point The point [x,y]
+    * @param {float[][]} line The line [ A , B ] where A and B are two points
+    * @return {float} The distance
+    */
+function distanceToLine( point, line ) {
+    var b = line[0];
+    var c = line [1];
+    var a = point;
+    var line = Math.pow( length( b, c ), 2 );
+    if ( line === 0 ) return Math.pow( length( a, b ), 2 );
+    var d = ( ( a[ 0 ] - b[ 0 ] ) * ( c[ 0 ] - b[ 0 ] ) + ( a[ 1 ] - b[ 1 ] ) * ( c[ 1 ] - b[ 1 ] ) ) / line;
+    d = Math.max( 0, Math.min( 1, d ) );
+    var distance = Math.pow( length( a, [ b[ 0 ] + d * ( c[ 0 ] - b[ 0 ] ), b[ 1 ] + d * ( c[ 1 ] - b[ 1 ] ) ] ), 2 );
+
+    return Math.sqrt( distance );
+};
+
+/**
     * The gaussian function
     * @function
     * @param {Number} value The variable
@@ -1728,6 +1749,7 @@ function subPoints(p1, p2, w) {
  * Adds two paths together.<br />
  * The paths must be objects with three array attributes: points, inTangents, outTangents
  * @function
+ * @name addPath
  * @param {Object} path1 First path
  * @param {Object} path2 Second path
  * @param {float} path2weight A weight to multiply the second path values
@@ -1744,6 +1766,40 @@ function addPath(path1, path2, path2weight) {
     path.outTangents = outT;
     return path;
 }
+
+/**
+ * Checks if a point is inside a given polygon.
+ * @function
+ * @name inside
+ * @param {float[]} point A 2D point [x, y]
+ * @param {float[][]} points The vertices of the polygon
+ * @returns {object} An object with two properties:  
+ * - `inside (bool)` is true if the point is inside the polygon
+ * - `closestVertex` is the index of the closest vertex of the polygon
+ */
+function inside( point, points ) {
+    var x = point[ 0 ],
+        y = point[ 1 ];
+    var result = 0;
+    var inside = false;
+    for ( var i = 0, j = points.length - 1; i < points.length; j = i++ ) {
+        var xi = points[ i ][ 0 ],
+            yi = points[ i ][ 1 ];
+        var xj = points[ j ][ 0 ],
+            yj = points[ j ][ 1 ];
+        var intersect = ( ( yi > y ) != ( yj > y ) ) &&
+            ( x <
+                ( xj - xi ) * ( y - yi ) / ( yj - yi ) + xi );
+        if ( intersect ) inside = !inside;
+
+        var t1 = length( points[ i ], point );
+        var t2 = length( points[ result ], point );
+        if ( t1 < t2 ) {
+            result = i;
+        }
+    }
+    return { inside: inside, closestVertex: result };
+};
 
 /**
  * Multiplies a path with a scalar.<br />
@@ -2807,6 +2863,36 @@ Matrix.prototype = {
 	}
 };
 
+
+/**
+ * Transform the points from layer to world coordinates
+ * @function
+ * @param {float[][]} points The points
+ * @param {Layer} layer The layer
+ * @return {float[][]} The points in world coordinates
+ */
+function pointsToWorld( points, layer ) {
+    for (var i = 0; i < points.length; i++) {
+        points[i] = layer.toWorld(points[i]);
+    }
+    return points;
+}
+
+/**
+ * Gets the points of the shape path in layer coordinates (applies the group transform)
+ * @function
+ * @param {Property} prop The property from which to get the path
+ * @return {float[][]} The points in layer coordinates
+ * @requires getGroupTransformMatrix
+ */
+function shapePointsToLayer( prop ) {
+    var points = prop.points();
+    var matrix = getGroupTransformMatrix( prop );
+    for (var i = 0; i < points.length; i++) {
+        points[i] = matrix.applyToPoint( points[i] );
+    }
+    return points;
+}
 
 /**
  * Translates a point with a layer, as if it was parented to it.<br />

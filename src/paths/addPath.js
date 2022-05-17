@@ -2,6 +2,7 @@
  * Adds two paths together.<br />
  * The paths must be objects with three array attributes: points, inTangents, outTangents
  * @function
+ * @name addPath
  * @param {Object} path1 First path
  * @param {Object} path2 Second path
  * @param {float} path2weight A weight to multiply the second path values

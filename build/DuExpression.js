@@ -951,6 +951,17 @@ return x < 0 ? -pow(-x, 1/3) : pow(x, 1/3);
 };
 })(Math.pow);
 }
+function distanceToLine( point, line ) {
+var b = line[0];
+var c = line [1];
+var a = point;
+var line = Math.pow( length( b, c ), 2 );
+if ( line === 0 ) return Math.pow( length( a, b ), 2 );
+var d = ( ( a[ 0 ] - b[ 0 ] ) * ( c[ 0 ] - b[ 0 ] ) + ( a[ 1 ] - b[ 1 ] ) * ( c[ 1 ] - b[ 1 ] ) ) / line;
+d = Math.max( 0, Math.min( 1, d ) );
+var distance = Math.pow( length( a, [ b[ 0 ] + d * ( c[ 0 ] - b[ 0 ] ), b[ 1 ] + d * ( c[ 1 ] - b[ 1 ] ) ] ), 2 );
+return Math.sqrt( distance );
+};
 function gaussian( value, min, max, center, fwhm)
 {
 if (typeof min === 'undefined') min = 0;
@@ -1072,6 +1083,28 @@ path.inTangents = inT;
 path.outTangents = outT;
 return path;
 }
+function inside( point, points ) {
+var x = point[ 0 ],
+y = point[ 1 ];
+var result = 0;
+var inside = false;
+for ( var i = 0, j = points.length - 1; i < points.length; j = i++ ) {
+var xi = points[ i ][ 0 ],
+yi = points[ i ][ 1 ];
+var xj = points[ j ][ 0 ],
+yj = points[ j ][ 1 ];
+var intersect = ( ( yi > y ) != ( yj > y ) ) &&
+( x <
+( xj - xi ) * ( y - yi ) / ( yj - yi ) + xi );
+if ( intersect ) inside = !inside;
+var t1 = length( points[ i ], point );
+var t2 = length( points[ result ], point );
+if ( t1 < t2 ) {
+result = i;
+}
+}
+return { inside: inside, closestVertex: result };
+};
 function multPath(path, weight) {
 var vertices = multPoints(path.points, weight);
 var inT = multPoints(path.inTangents, weight);
@@ -1570,6 +1603,20 @@ me.context.setTransform(me.a, me.b, me.c, me.d, me.e, me.f);
 return me
 }
 };
+function pointsToWorld( points, layer ) {
+for (var i = 0; i < points.length; i++) {
+points[i] = layer.toWorld(points[i]);
+}
+return points;
+}
+function shapePointsToLayer( prop ) {
+var points = prop.points();
+var matrix = getGroupTransformMatrix( prop );
+for (var i = 0; i < points.length; i++) {
+points[i] = matrix.applyToPoint( points[i] );
+}
+return points;
+}
 function translatePointWithLayer( l, point, startT, endT ) {
 try {
 var pos = l.fromWorld( point, startT );
