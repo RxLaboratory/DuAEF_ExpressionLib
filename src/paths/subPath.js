@@ -7,6 +7,7 @@
  * @param {float} path2weight A weight to multiply the second path values
  * @returns {Object} A path object with three array attributes: points, inTangents, outTangents
  * @requires subPoints
+ * @category ExpressionLibrary
  */
 function subPath(path1, path2, path2weight) {
     var vertices = subPoints(path1.points, path2.points, path2weight);

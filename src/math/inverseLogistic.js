@@ -7,6 +7,7 @@
     * @param {Number} [max=1] The maximum return value of the original logistic function
     * @param {Number} [rate=1] The logistic growth rate or steepness of the original logistic function
     * @return {Number} The result
+    * @memberof ExpressionLibrary
     */
 function inverseLogistic ( v, midValue, min, max, rate)
 {

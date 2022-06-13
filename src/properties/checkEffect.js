@@ -10,6 +10,7 @@
  * @param {int} propIndex The index of the property
  * @param {string} propName The expected name of the property. Be careful with the internationalization of After Effects...
  * @return {boolean} True when the property at propIndex is named propName
+ * @category ExpressionLibrary
  */
 function checkEffect(fx, propIndex, propName) {
     if (fx.numProperties  < propIndex) return false;

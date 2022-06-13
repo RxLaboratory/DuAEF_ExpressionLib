@@ -4,6 +4,7 @@
  * @function
  * @param {Property} [prop=thisProperty] The property
  * @return {boolean} true if the property is the transform.position property.
+ * @category ExpressionLibrary
  */
 function isPosition(prop) {
 	return  prop === position;

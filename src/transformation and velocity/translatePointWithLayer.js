@@ -7,6 +7,7 @@
  * @param {float} [startT=0] The start time of the translation
  * @param {float} [endT=time] The end time of the translation
  * @return {float[]} The coordinates of the translated point.
+ * @category ExpressionLibrary
  */
 function translatePointWithLayer( l, point, startT, endT ) {
     try {

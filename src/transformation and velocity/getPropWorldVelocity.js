@@ -6,6 +6,7 @@
  * @param {Layer} [prop=thisProperty] The property
  * @return {number[]} The world velocity
  * @requires getPropWorldValue
+ * @category ExpressionLibrary
  */
 function getPropWorldVelocity(t, prop) {
 	return (getPropWorldValue(t + 0.005, prop) - getPropWorldValue(t - 0.005, prop)) * 100;

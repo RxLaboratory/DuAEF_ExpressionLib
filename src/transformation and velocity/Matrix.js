@@ -18,6 +18,7 @@
   * @version 2.7.5
   * @license MIT license (header required)
   * @copyright Epistemex.com 2014-2018
+  * @category ExpressionLibrary
 */
 function Matrix() {
 	/*!

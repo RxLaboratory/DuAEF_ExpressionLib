@@ -1,7 +1,9 @@
 /**
  * Integrates the (linear) keyframe values. Useful to animate frequencies!
  * cf. {@link http://www.motionscript.com/articles/speed-control.html} for more explanation.
- * @param {Property} [prop=thisProperty] The property with the keyframes. 
+ * @function
+ * @param {Property} [prop=thisProperty] The property with the keyframes.
+ * @memberof ExpressionLibrary
  */
 function integrateLinearKeys( prop ) {
     if (typeof prop === 'undefined') prop = thisProperty;

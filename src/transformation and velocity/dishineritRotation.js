@@ -14,6 +14,7 @@
  * @param {Layer} [l=thisLayer] The layer
  * @return {float} The new rotation value, in degrees.
  * @requires sign
+ * @category ExpressionLibrary
  */
 function dishineritRotation( l ) {
     if (typeof l === 'undefined') l = thisLayer;

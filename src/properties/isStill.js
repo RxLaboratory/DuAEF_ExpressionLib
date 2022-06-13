@@ -5,6 +5,7 @@
  * @param {number} [threshold=0.01] The speed under which the property is considered still.
  * @param {number} [axis=-1] The axis to check. If < 0, will check all axis.
  * @return {boolean} true if the property does not vary.
+ * @category ExpressionLibrary
  */
 function isStill(t, threshold, axis) {
 	if (typeof t === 'undefined') t = time;

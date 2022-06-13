@@ -6,6 +6,7 @@
  * @return {number[]} The 2D coordinates of the point in the Layer.
  * @requires Matrix
  * @requires getGroupTransformMatrix
+ * @category ExpressionLibrary
  */
 function fromGroupToLayer( point ) {
     var matrix = getGroupTransformMatrix();

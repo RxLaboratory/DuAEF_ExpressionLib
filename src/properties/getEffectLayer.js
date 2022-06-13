@@ -4,6 +4,7 @@
  * @param {Property} fx The effect
  * @param {int|string} ind The index or the name of the property
  * @return {Layer|null} The layer, or null if set to "None"
+ * @category ExpressionLibrary
  */
 function getEffectLayer( fx, ind ) {
 	try { var l = fx( ind ); return l; }

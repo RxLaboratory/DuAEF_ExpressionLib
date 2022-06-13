@@ -8,6 +8,7 @@
  * @function
  * @requires getPrevKey
  * @requires bezierInterpolation
+ * @memberof ExpressionLibrary
  */
 function bounce(t, elasticity, damping, vAtTime) {
   

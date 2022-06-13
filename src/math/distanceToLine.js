@@ -1,10 +1,10 @@
 /**
     * Gets the distance of a point to a line
     * @function
-    * @name distanceToLine
     * @param {float[]} point The point [x,y]
     * @param {float[][]} line The line [ A , B ] where A and B are two points
     * @return {float} The distance
+    * @memberof ExpressionLibrary
     */
 function distanceToLine( point, line ) {
     var b = line[0];

@@ -3,6 +3,7 @@
  * @function
  * @param {number} rate The raising speed in the range [-1.0, 1.0].
  * @return {number} the value.
+ * @memberof ExpressionLibrary
  */
 function gaussianRateToBezierPoints(rate) {
     var i = 0;

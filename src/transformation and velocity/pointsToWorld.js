@@ -4,6 +4,7 @@
  * @param {float[][]} points The points
  * @param {Layer} layer The layer
  * @return {float[][]} The points in world coordinates
+ * @category ExpressionLibrary
  */
 function pointsToWorld( points, layer ) {
     for (var i = 0; i < points.length; i++) {

@@ -1,12 +1,12 @@
 /**
  * Checks if a point is inside a given polygon.
  * @function
- * @name inside
  * @param {float[]} point A 2D point [x, y]
  * @param {float[][]} points The vertices of the polygon
  * @returns {object} An object with two properties:  
  * - `inside (bool)` is true if the point is inside the polygon
  * - `closestVertex` is the index of the closest vertex of the polygon
+ * @category ExpressionLibrary
  */
 function inside( point, points ) {
     var x = point[ 0 ],

@@ -3,6 +3,7 @@
  * @function
  * @param {Property} prop The property
  * @return {boolean} true if the property is a path property.
+ * @category ExpressionLibrary
  */
 function isPath(prop) {
     try {

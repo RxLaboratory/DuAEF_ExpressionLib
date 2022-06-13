@@ -4,6 +4,7 @@
  * @param {Layer} l The layer to get the orientation from
  * @return {float} The orientation, in degrees.
  * @requires sign
+ * @category ExpressionLibrary
  */
 function getOrientation( l ) {
     var sign = getScaleMirror( l );

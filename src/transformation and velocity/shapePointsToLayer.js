@@ -4,6 +4,7 @@
  * @param {Property} prop The property from which to get the path
  * @return {float[][]} The points in layer coordinates
  * @requires getGroupTransformMatrix
+ * @category ExpressionLibrary
  */
 function shapePointsToLayer( prop ) {
     var points = prop.points();

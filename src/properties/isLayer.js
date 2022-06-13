@@ -3,6 +3,7 @@
  * @function
  * @param {Property} prop - The property to test
  * @return {boolean} true if the prop is a layer
+ * @category ExpressionLibrary
  */
 function isLayer( prop ) {
 	//try catch is needed for the legacy expression engine

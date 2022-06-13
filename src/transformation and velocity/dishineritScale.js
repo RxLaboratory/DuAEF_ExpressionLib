@@ -14,6 +14,7 @@
  * @function
  * @param {Layer} [l=thisLayer] The layer
  * @return {float[]} The new scale value, in percent.
+ * @category ExpressionLibrary
  */
 function dishineritScale( l ) {
     var s = l.scale.value;

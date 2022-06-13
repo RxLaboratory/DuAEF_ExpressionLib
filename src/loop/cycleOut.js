@@ -8,6 +8,7 @@
  * @returns {float|float[]} The new value
  * @function
  * @requires getPrevKey
+ * @memberof ExpressionLibrary
  */
  function cycleOut(t, nK, o, vAtTime, damping) {
 	var currentValue = vAtTime(t);

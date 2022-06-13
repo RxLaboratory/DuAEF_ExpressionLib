@@ -7,6 +7,7 @@
     * @param {Number} [max=1] The maximum return value
     * @param {Number} [rate=1] The logistic growth rate or steepness of the function
     * @return {Number} The result in the range [min, max] (excluding min and max)
+    * @category ExpressionLibrary
     */
 function logistic( value, midValue, min, max, rate)
 {
