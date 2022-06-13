@@ -9,7 +9,7 @@
  * @param {number} [value1=0] The minimum value of the interpolated result
  * @param {number} [value2=1] The maximum value of the interpolated result
  * @return {number} the value.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function linearExtrapolation( t, tMin, tMax, value1, value2 )
 {

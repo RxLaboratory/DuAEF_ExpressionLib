@@ -10,7 +10,7 @@
   * @requires inverseLogistic
   * @requires logistic
   * @requires mean
-  * @memberof ExpressionLibrary
+  * @category ExpressionLibrary
 */
 
 function FuzzySet( name, valueNot, valueIS, shape, shapeAbove, plateauMin, plateauMax)
@@ -558,7 +558,7 @@ function createQuantifier( q )
  * @copyright 2020-2022 Nicolas Dufresne and contributors
  * @param {Number} v The original veracity, must be in the range [0.0, 1.0]
  * @param {Number} [f=1] A factor to adjust the <i>importance</i> of the veracity, when compared to others.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 
 function FuzzyVeracity( v, f )
@@ -619,7 +619,7 @@ FuzzyVeracity.prototype = {
  * ];
  * animate(keyframes, 'cycle', 'pingpong');
  * @return {number} the animated value.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
  function animate(ks, loopOut, loopIn, ct) {
     if (ks.length == 0) return value;
@@ -687,7 +687,7 @@ FuzzyVeracity.prototype = {
  * @param {number[]} [bezierPoints=[0.33,0.0,0.66,1.0]] an Array of 4 coordinates wihtin the [0.0, 1.0] range which describes the Bézier interpolation. The default mimics the native ease() function<br />
  * [ outTangentX, outTangentY, inTangentX, inTangentY ]
  * @return {number} the value.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {
     if (typeof tMin === 'undefined') tMin = 0;
@@ -735,7 +735,7 @@ function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {
  * @param {number} [rate=1] The raising speed in the range [0, inf].
  * @return {number} the value.
  * @requires linearExtrapolation
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function expInterpolation(t, tMin, tMax, vMin, vMax, rate)
 {
@@ -768,7 +768,7 @@ function expInterpolation(t, tMin, tMax, vMin, vMax, rate)
  * @param {number} [value2=1] The maximum value of the interpolated result
  * @param {number} [rate=0] The raising speed in the range [-1.0, 1.0].
  * @return {number} the value.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )
 {
@@ -807,7 +807,7 @@ function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )
  * @function
  * @param {number} rate The raising speed in the range [-1.0, 1.0].
  * @return {number} the value.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function gaussianRateToBezierPoints(rate) {
     var i = 0;
@@ -828,7 +828,7 @@ function gaussianRateToBezierPoints(rate) {
  * cf. {@link http://www.motionscript.com/articles/speed-control.html} for more explanation.
  * @function
  * @param {Property} [prop=thisProperty] The property with the keyframes.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function integrateLinearKeys( prop ) {
     if (typeof prop === 'undefined') prop = thisProperty;
@@ -857,7 +857,7 @@ function integrateLinearKeys( prop ) {
  * @param {number|number[]|null} [min] The minimum value
  * @param {number|number[]|null} [max] The maximum value
  * @param {number} [softness=0] The softness, a value corresponding value, from which the interpolation begins to slow down
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function limit(val, min, max, softness) {
     if (typeof min === 'undefined') min = null;
@@ -922,7 +922,7 @@ function limit(val, min, max, softness) {
  * @param {number} [value1=0] The minimum value of the interpolated result
  * @param {number} [value2=1] The maximum value of the interpolated result
  * @return {number} the value.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function linearExtrapolation( t, tMin, tMax, value1, value2 )
 {
@@ -944,7 +944,7 @@ function linearExtrapolation( t, tMin, tMax, value1, value2 )
  * @param {number} [rate=1] The raising speed in the range [0, inf].
  * @return {number} the value.
  * @requires linearExtrapolation
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function logInterpolation(t, tMin, tMax, vMin, vMax, rate)
 {
@@ -980,7 +980,7 @@ function logInterpolation(t, tMin, tMax, vMin, vMax, rate)
  * @return {number} the value.s
  * @requires logistic
  * @requires linearExtrapolation
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function logisticInterpolation( t, tMin, tMax, value1, value2, rate, tMid )
 {
@@ -1008,7 +1008,7 @@ function logisticInterpolation( t, tMin, tMax, value1, value2, rate, tMid )
  * @param {number} [t=time] Time at which to get the key
  * @param {Property} [prop=thisProperty] The property from which to get the key
  * @return {Key|null} The key, or null if there's no key before.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function getNextKey(t, prop) {
     if (typeof t === 'undefined') t = time;
@@ -1029,7 +1029,7 @@ function getNextKey(t, prop) {
  * @return {Key|null} The key, or null if there's no key before.
  * @requires isStill
  * @requires getNextKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function getNextStopKey(t, prop) {
     if (typeof t === 'undefined') t = time;
@@ -1052,7 +1052,7 @@ function getNextStopKey(t, prop) {
  * @param {number} [t=time] Time at which to get the key
  * @param {Property} [prop=thisProperty] The property from which to get the key
  * @return {Key|null} The key, or null if there's no key before.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function getPrevKey(t, prop) {
     if (typeof t === 'undefined') t = time;
@@ -1073,7 +1073,7 @@ function getPrevKey(t, prop) {
  * @return {Key|null} The key, or null if there's no key before.
  * @requires isStill
  * @requires getPrevKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function getPrevStartKey(t, prop) {
     if (typeof t === 'undefined') t = time;
@@ -1095,7 +1095,7 @@ function getPrevStartKey(t, prop) {
  * Checks if current time is after the time of the last key in the property
  * @function
  * @return {boolean} true if time is > lastkey.time
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function isAfterLastKey() {
 	if (numKeys == 0) return false;
@@ -1110,7 +1110,7 @@ function isAfterLastKey() {
  * @param {Keyframe} k The key to check
  * @param {int} axis The axis to check for multi-dimensionnal properties
  * @return {boolean} true if the key is a maximum or minimum
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function isKeyTop(k, axis) {
 	var prevSpeed = velocityAtTime(k.time - thisComp.frameDuration/2);
@@ -1133,7 +1133,7 @@ function isKeyTop(k, axis) {
  * @function
  * @requires getPrevKey
  * @requires bezierInterpolation
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function bounce(t, elasticity, damping, vAtTime) {
   
@@ -1225,7 +1225,7 @@ function bounce(t, elasticity, damping, vAtTime) {
  * @returns {float|float[]} The new value
  * @function
  * @requires getNextKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
  function continueIn(t, damping) {
 	if (numKeys <= 1) return value;
@@ -1247,7 +1247,7 @@ function bounce(t, elasticity, damping, vAtTime) {
  * @returns {float|float[]} The new value
  * @function
  * @requires getNextKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function continueOut(t, damping) {
 	if (numKeys <= 1) return value;
@@ -1271,7 +1271,7 @@ function continueOut(t, damping) {
  * @returns {float|float[]} The new value
  * @function
  * @requires getNextKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
  function cycleIn(t, nK, o, vAtTime, damping) {
 	var currentValue = vAtTime(t);
@@ -1315,7 +1315,7 @@ function continueOut(t, damping) {
  * @returns {float|float[]} The new value
  * @function
  * @requires getPrevKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
  function cycleOut(t, nK, o, vAtTime, damping) {
 	var currentValue = vAtTime(t);
@@ -1358,7 +1358,7 @@ function continueOut(t, damping) {
  * @returns {float|float[]} The new value
  * @function
  * @requires getPrevKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function overShoot(t, elasticity, damping, vAtTime) {
 
@@ -1419,7 +1419,7 @@ function overShoot(t, elasticity, damping, vAtTime) {
  * @returns {float} The new value
  * @function
  * @requires getNextKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
  function pingPongIn(t, nK, vAtTime, damping) {
 	var currentValue = vAtTime(t);
@@ -1464,7 +1464,7 @@ function overShoot(t, elasticity, damping, vAtTime) {
  * @returns {float} The new value
  * @function
  * @requires getPrevKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
  function pingPongOut(t, nK, vAtTime, damping) {
 	var currentValue = vAtTime(t);
@@ -1506,7 +1506,7 @@ function overShoot(t, elasticity, damping, vAtTime) {
  * @param {float[][]} p2 The other list of points
  * @param {float} w A weight to multiply the values of p2
  * @returns {float[][]} The added points
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function addPoints(p1, p2, w) {
     var n = p1.length;
@@ -1532,7 +1532,7 @@ function addPoints(p1, p2, w) {
     * @name Math.cbrt
     * @param {Number} x The value
     * @return {Number} The cubic root
-    * @memberof ExpressionLibrary
+    * @category ExpressionLibrary
     */
 if (typeof Math.cbrt === 'undefined') {
     Math.cbrt = (function(pow) {
@@ -1550,7 +1550,7 @@ if (typeof Math.cbrt === 'undefined') {
     * @param {float[]} point The point [x,y]
     * @param {float[][]} line The line [ A , B ] where A and B are two points
     * @return {float} The distance
-    * @memberof ExpressionLibrary
+    * @category ExpressionLibrary
     */
 function distanceToLine( point, line ) {
     var b = line[0];
@@ -1574,7 +1574,7 @@ function distanceToLine( point, line ) {
     * @param {Number} [center=0] The center of the peak
     * @param {Number} [fwhm=1] The full width at half maximum of the curve
     * @return {Number} The result
-    * @memberof ExpressionLibrary
+    * @category ExpressionLibrary
     */
 function gaussian( value, min, max, center, fwhm)
 {
@@ -1602,7 +1602,7 @@ function gaussian( value, min, max, center, fwhm)
     * @param {Number} [center=0] The center of the peak of the corresponding gaussian function
     * @param {Number} [fwhm=1] The full width at half maximum of the curve of the corresponding gaussian function
     * @return {Number[]} The two possible results, the lower is the first in the list. If both are the same, it is the maximum
-    * @memberof ExpressionLibrary
+    * @category ExpressionLibrary
     */
 function inverseGaussian ( v, min, max, center, fwhm)
 {
@@ -1631,7 +1631,7 @@ function inverseGaussian ( v, min, max, center, fwhm)
     * @param {Number} [max=1] The maximum return value of the original logistic function
     * @param {Number} [rate=1] The logistic growth rate or steepness of the original logistic function
     * @return {Number} The result
-    * @memberof ExpressionLibrary
+    * @category ExpressionLibrary
     */
 function inverseLogistic ( v, midValue, min, max, rate)
 {
@@ -1650,7 +1650,7 @@ function inverseLogistic ( v, midValue, min, max, rate)
     * @function
     * @param {Number|Number[]} x The value(s)
     * @return {Boolean} true if all values are 0.
-    * @memberof ExpressionLibrary
+    * @category ExpressionLibrary
     */
  function isZero(a)
  {

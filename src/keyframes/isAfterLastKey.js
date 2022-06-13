@@ -2,7 +2,7 @@
  * Checks if current time is after the time of the last key in the property
  * @function
  * @return {boolean} true if time is > lastkey.time
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function isAfterLastKey() {
 	if (numKeys == 0) return false;

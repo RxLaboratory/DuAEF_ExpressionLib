@@ -3,7 +3,7 @@
     * @function
     * @param {Number|Number[]} x The value(s)
     * @return {Boolean} true if all values are 0.
-    * @memberof ExpressionLibrary
+    * @category ExpressionLibrary
     */
  function isZero(a)
  {

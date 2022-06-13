@@ -3,7 +3,7 @@
  * cf. {@link http://www.motionscript.com/articles/speed-control.html} for more explanation.
  * @function
  * @param {Property} [prop=thisProperty] The property with the keyframes.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function integrateLinearKeys( prop ) {
     if (typeof prop === 'undefined') prop = thisProperty;

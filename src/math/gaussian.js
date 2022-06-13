@@ -7,7 +7,7 @@
     * @param {Number} [center=0] The center of the peak
     * @param {Number} [fwhm=1] The full width at half maximum of the curve
     * @return {Number} The result
-    * @memberof ExpressionLibrary
+    * @category ExpressionLibrary
     */
 function gaussian( value, min, max, center, fwhm)
 {

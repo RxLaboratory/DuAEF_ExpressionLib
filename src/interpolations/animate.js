@@ -19,7 +19,7 @@
  * ];
  * animate(keyframes, 'cycle', 'pingpong');
  * @return {number} the animated value.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
  function animate(ks, loopOut, loopIn, ct) {
     if (ks.length == 0) return value;

@@ -12,7 +12,7 @@
  * @return {number} the value.s
  * @requires logistic
  * @requires linearExtrapolation
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function logisticInterpolation( t, tMin, tMax, value1, value2, rate, tMid )
 {

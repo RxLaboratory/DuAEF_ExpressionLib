@@ -10,7 +10,7 @@
  * @param {number[]} [bezierPoints=[0.33,0.0,0.66,1.0]] an Array of 4 coordinates wihtin the [0.0, 1.0] range which describes the Bézier interpolation. The default mimics the native ease() function<br />
  * [ outTangentX, outTangentY, inTangentX, inTangentY ]
  * @return {number} the value.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {
     if (typeof tMin === 'undefined') tMin = 0;

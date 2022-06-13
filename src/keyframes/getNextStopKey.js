@@ -6,7 +6,7 @@
  * @return {Key|null} The key, or null if there's no key before.
  * @requires isStill
  * @requires getNextKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function getNextStopKey(t, prop) {
     if (typeof t === 'undefined') t = time;

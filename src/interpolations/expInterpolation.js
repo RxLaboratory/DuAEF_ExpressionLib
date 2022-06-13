@@ -11,7 +11,7 @@
  * @param {number} [rate=1] The raising speed in the range [0, inf].
  * @return {number} the value.
  * @requires linearExtrapolation
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function expInterpolation(t, tMin, tMax, vMin, vMax, rate)
 {

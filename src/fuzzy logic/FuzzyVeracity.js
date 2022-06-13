@@ -9,7 +9,7 @@
  * @copyright 2020-2022 Nicolas Dufresne and contributors
  * @param {Number} v The original veracity, must be in the range [0.0, 1.0]
  * @param {Number} [f=1] A factor to adjust the <i>importance</i> of the veracity, when compared to others.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 
 function FuzzyVeracity( v, f )

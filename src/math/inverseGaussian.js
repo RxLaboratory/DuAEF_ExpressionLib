@@ -7,7 +7,7 @@
     * @param {Number} [center=0] The center of the peak of the corresponding gaussian function
     * @param {Number} [fwhm=1] The full width at half maximum of the curve of the corresponding gaussian function
     * @return {Number[]} The two possible results, the lower is the first in the list. If both are the same, it is the maximum
-    * @memberof ExpressionLibrary
+    * @category ExpressionLibrary
     */
 function inverseGaussian ( v, min, max, center, fwhm)
 {
