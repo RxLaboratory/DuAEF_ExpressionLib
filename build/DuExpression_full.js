@@ -597,6 +597,82 @@ FuzzyVeracity.prototype = {
 };
 
 /**
+ * Animates the property using the given keyframes
+ * @function
+ * @param {Object[]} keyframes The keyframes. An object with four properties:<br/>
+ * <code>value</code> The value of the keyframe<br />
+ * <code>time</code> The time of the keyframe<br />
+ * <code>interpolation</code> (optional. Default: linear) A function taking 5 arguments to interpolate between this keyframe and the next one<br />
+ * <code>params</code> (optional.) A sixth argument passed to the interpolation function. To be used with DuAEF interpolations.<br />
+ * Note that the keyframes <strong>must be sorted</strong>. The function does not sort them, as it would have a bad impact on performance.
+ * @param {string} [loopOut='none'] One of 'none', 'cycle', 'pingpong'.
+ * @param {string} [loopIn='none'] One of 'none', 'cycle', 'pingpong'.
+ * @param {float} [time=time] Use this to control how time flows.
+ * @example
+ * var keyframes = [
+ *    {value: 0, time: 1, interpolation: linear},
+ *    {value: 180, time: 2, interpolation: gaussianInterpolation, params: -0.5}, //You need to include the gaussianInterpolation function from DuAEF
+ *    {value: 250, time: 4, interpolation: ease},
+ *    {value: 360, time: 5},
+ * ];
+ * animate(keyframes, 'cycle', 'pingpong');
+ * @return {number} the animated value.
+ */
+ function animate(ks, loopOut, loopIn, ct) {
+    if (ks.length == 0) return value;
+    if (ks.length == 1) return ks[0].value;
+    if (typeof loopOut === 'undefined') loopOut = 'none';
+    if (typeof loopIn === 'undefined') loopIn = 'none';
+	if (typeof ct === 'undefined') ct = time;
+    // times
+    var startTime = ks[0].time;
+    var endTime = ks[ks.length-1].time;
+    var duration = endTime - startTime;
+    // Loop out
+    if ( ct >= endTime )
+    {
+        if ( loopOut == 'cycle' ) ct = ((ct - startTime) % duration) + startTime;
+        else if ( loopOut == 'pingpong' ) {
+            var d = duration * 2;
+            ct = (ct-startTime) % d;
+            if (ct > duration) ct = d - ct;
+            ct += startTime;
+        }
+    }
+    // Loop in
+    else if ( ct < startTime) {
+        if ( loopIn == 'cycle' ) ct = ((ct - startTime) % duration) + startTime + duration;
+        else if ( loopIn == 'pingpong' ) {
+            var d = duration * 2;
+            ct += d;
+            ct = (ct-startTime) % d;
+            if (ct > duration) ct = d - ct;
+            ct += startTime;
+        }
+    }
+    // Find the right keyframe
+    for (var i = 0; i < ks.length; i++) {
+        var k = ks[i];
+        if (k.time > ct && i == 0) return k.value;
+        if (k.time == ct) return k.value;
+        if (k.time < ct) {
+            // it was the last one
+            if (i == ks.length - 1) return k.value;
+            // The next key
+            var nk = ks[i+1];
+            // it's not the current keyframe
+            if (nk.time < ct) continue;
+            if (typeof k.interpolation === 'undefined') return linear(ct, k.time, nk.time, k.value, nk.value);
+            // interpolate
+            if (typeof k.params === 'undefined') return k.interpolation(ct, k.time, nk.time, k.value, nk.value);
+            else return k.interpolation(ct, k.time, nk.time, k.value, nk.value, k.params);
+        }
+    }
+    // just in case...
+    return value;
+}
+
+/**
  * Interpolates a value with a bezier curve.<br />
  * This method can replace <code>linear()</code> and <code>ease()</code> with a custom bézier interpolation.
  * @function
@@ -741,6 +817,90 @@ function gaussianRateToBezierPoints(rate) {
   }
 
 /**
+ * Integrates the (linear) keyframe values. Useful to animate frequencies!
+ * cf. {@link http://www.motionscript.com/articles/speed-control.html} for more explanation.
+ * @param {Property} [prop=thisProperty] The property with the keyframes. 
+ */
+function integrateLinearKeys( prop ) {
+    if (typeof prop === 'undefined') prop = thisProperty;
+    var nK = prop.numKeys;
+
+    if (nK < 2) return prop.value*(time - inPoint);
+    if (prop.key(1).time > time ) return prop.value*(time - inPoint);
+
+    var result = prop.key(1).value * (prop.key(1).time - inPoint);
+
+    for (var i = 2; i <= nK; i++){
+        if ( prop.key(i).time > time ) break;
+        var k1 = prop.key(i-1);
+        var k2 = prop.key(i);
+        result += (k1.value + k2.value) * (k2.time - k1.time)/2;
+    }
+    result += (prop.value + prop.key(i-1).value) * (time - prop.key(i-1).time) / 2;
+    
+    return result;
+}
+
+/**
+ * Clamps a value, but with a smooth interpolation according to a softness parameter
+ * @param {number|number[]} value The value to limit
+ * @param {number|number[]|null} [min] The minimum value
+ * @param {number|number[]|null} [max] The maximum value
+ * @param {number} [softness=0] The softness, a value corresponding value, from which the interpolation begins to slow down
+ */
+function limit(val, min, max, softness) {
+    if (typeof min === 'undefined') min = null;
+    if (typeof max === 'undefined') max = null;
+    if (typeof softness === 'undefined') softness = 0;
+
+    if (min == null && max == null) return val;
+
+    if (typeof val.length !== 'undefined') {
+        var n = 0;
+        if (min !== null) {
+            if (typeof min.length === 'undefined') {
+                min = [min];
+                while(min.length < val.length) min.push(min[0]);
+            }
+            n = Math.max(val.length, min.length);
+        }
+        else if (max !== null) {
+            if (typeof max.length === 'undefined') {
+                max = [max];
+                while(max.length < val.length) max.push(max[0]);
+            }
+            n = Math.max(val.length, max.length);
+        }
+        for (var i = 0; i < n; i++) {
+            if (min !== null && max !== null) val[i] = limit(val[i], min[i], max[i], softness);
+            else if (min !== null) val[i] = limit(val[i], min[i], null, softness);
+            else if (max !== null) val[i] = limit(val[i], null, max[i], softness);
+        }
+        return val;
+    }
+
+    if (max != null) {
+        if (typeof max.length !== 'undefined') max = max[0];
+        max = max - softness;
+        if ( val > max ) {
+            if (softness == 0) return max;
+            return max + softness - softness / ( 1 + (val - max)/softness);
+        }
+    }
+    
+    if (min != null) {
+        if (typeof min.length !== 'undefined') min = min[0];
+        min = min + softness;
+        if (val < min && min != null) {
+            if (softness == 0) return min;
+            return min - softness + softness / (1 + (min - val)/softness);
+        }
+    }
+    
+    return val;
+}
+
+/**
  * Interpolates a value with a linear function, but also extrapolates it outside of known values.<br />
  * This method can replace <code>linear()</code>, adding extrapolation.<br />
  * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
@@ -773,25 +933,25 @@ function linearExtrapolation( t, tMin, tMax, value1, value2 )
  * @return {number} the value.
  * @requires linearExtrapolation
  */
- function logInterpolation(t, tMin, tMax, vMin, vMax, rate)
- {
-   if (typeof tMin === 'undefined') tMin = 0;
-   if (typeof tMax === 'undefined') tMax = 1;
-   if (typeof value1 === 'undefined') value1 = 0;
-   if (typeof value2 === 'undefined') value2 = 0;
-   if (typeof rate === 'undefined') rate = 1;
+function logInterpolation(t, tMin, tMax, vMin, vMax, rate)
+{
+  if (typeof tMin === 'undefined') tMin = 0;
+  if (typeof tMax === 'undefined') tMax = 1;
+  if (typeof value1 === 'undefined') value1 = 0;
+  if (typeof value2 === 'undefined') value2 = 0;
+  if (typeof rate === 'undefined') rate = 1;
 
-    if (rate == 0) return linearExtrapolation(t, tMin, tMax, vMin, vMax);
-    // Offset t to be in the range 0-Max
-    tMax = ( tMax - tMin ) * rate + 1;
-    t = ( t - tMin ) * rate + 1;
-    if (t <= 1) return vMin;
-    // Compute the max
-    var m = Math.log(tMax);
-    // Compute current value
-    var v = Math.log(t);
-    return linearExtrapolation(v, 0, m, vMin, vMax);
- }
+  if (rate == 0) return linearExtrapolation(t, tMin, tMax, vMin, vMax);
+  // Offset t to be in the range 0-Max
+  tMax = ( tMax - tMin ) * rate + 1;
+  t = ( t - tMin ) * rate + 1;
+  if (t <= 1) return vMin;
+  // Compute the max
+  var m = Math.log(tMax);
+  // Compute current value
+  var v = Math.log(t);
+  return linearExtrapolation(v, 0, m, vMin, vMax);
+}
 
 /**
  * Interpolates a value with a logistic (sigmoid) function.<br />
@@ -1355,6 +1515,27 @@ if (typeof Math.cbrt === 'undefined') {
   
 
 /**
+    * Gets the distance of a point to a line
+    * @function
+    * @name distanceToLine
+    * @param {float[]} point The point [x,y]
+    * @param {float[][]} line The line [ A , B ] where A and B are two points
+    * @return {float} The distance
+    */
+function distanceToLine( point, line ) {
+    var b = line[0];
+    var c = line [1];
+    var a = point;
+    var line = Math.pow( length( b, c ), 2 );
+    if ( line === 0 ) return Math.pow( length( a, b ), 2 );
+    var d = ( ( a[ 0 ] - b[ 0 ] ) * ( c[ 0 ] - b[ 0 ] ) + ( a[ 1 ] - b[ 1 ] ) * ( c[ 1 ] - b[ 1 ] ) ) / line;
+    d = Math.max( 0, Math.min( 1, d ) );
+    var distance = Math.pow( length( a, [ b[ 0 ] + d * ( c[ 0 ] - b[ 0 ] ), b[ 1 ] + d * ( c[ 1 ] - b[ 1 ] ) ] ), 2 );
+
+    return Math.sqrt( distance );
+};
+
+/**
     * The gaussian function
     * @function
     * @param {Number} value The variable
@@ -1568,6 +1749,7 @@ function subPoints(p1, p2, w) {
  * Adds two paths together.<br />
  * The paths must be objects with three array attributes: points, inTangents, outTangents
  * @function
+ * @name addPath
  * @param {Object} path1 First path
  * @param {Object} path2 Second path
  * @param {float} path2weight A weight to multiply the second path values
@@ -1584,6 +1766,40 @@ function addPath(path1, path2, path2weight) {
     path.outTangents = outT;
     return path;
 }
+
+/**
+ * Checks if a point is inside a given polygon.
+ * @function
+ * @name inside
+ * @param {float[]} point A 2D point [x, y]
+ * @param {float[][]} points The vertices of the polygon
+ * @returns {object} An object with two properties:  
+ * - `inside (bool)` is true if the point is inside the polygon
+ * - `closestVertex` is the index of the closest vertex of the polygon
+ */
+function inside( point, points ) {
+    var x = point[ 0 ],
+        y = point[ 1 ];
+    var result = 0;
+    var inside = false;
+    for ( var i = 0, j = points.length - 1; i < points.length; j = i++ ) {
+        var xi = points[ i ][ 0 ],
+            yi = points[ i ][ 1 ];
+        var xj = points[ j ][ 0 ],
+            yj = points[ j ][ 1 ];
+        var intersect = ( ( yi > y ) != ( yj > y ) ) &&
+            ( x <
+                ( xj - xi ) * ( y - yi ) / ( yj - yi ) + xi );
+        if ( intersect ) inside = !inside;
+
+        var t1 = length( points[ i ], point );
+        var t2 = length( points[ result ], point );
+        if ( t1 < t2 ) {
+            result = i;
+        }
+    }
+    return { inside: inside, closestVertex: result };
+};
 
 /**
  * Multiplies a path with a scalar.<br />
@@ -1640,13 +1856,8 @@ function subPath(path1, path2, path2weight) {
  */
 function checkDuikEffect(fx, duikMatchName) {
     if (fx.numProperties  < 3) return false;
-    if (!!$.engineName) {
-        if ( fx(2).name != duikMatchName ) return false;
-    }
-    else {
-        try { if (fx(2).name != duikMatchName) return false; }
-        catch (e) { return false; }
-    }
+    try { if (fx(2).name != duikMatchName) return false; }
+    catch (e) { return false; }
     return true;
 }
 
@@ -2652,6 +2863,36 @@ Matrix.prototype = {
 	}
 };
 
+
+/**
+ * Transform the points from layer to world coordinates
+ * @function
+ * @param {float[][]} points The points
+ * @param {Layer} layer The layer
+ * @return {float[][]} The points in world coordinates
+ */
+function pointsToWorld( points, layer ) {
+    for (var i = 0; i < points.length; i++) {
+        points[i] = layer.toWorld(points[i]);
+    }
+    return points;
+}
+
+/**
+ * Gets the points of the shape path in layer coordinates (applies the group transform)
+ * @function
+ * @param {Property} prop The property from which to get the path
+ * @return {float[][]} The points in layer coordinates
+ * @requires getGroupTransformMatrix
+ */
+function shapePointsToLayer( prop ) {
+    var points = prop.points();
+    var matrix = getGroupTransformMatrix( prop );
+    for (var i = 0; i < points.length; i++) {
+        points[i] = matrix.applyToPoint( points[i] );
+    }
+    return points;
+}
 
 /**
  * Translates a point with a layer, as if it was parented to it.<br />

@@ -33,5 +33,6 @@ if (typeof DuAEExpression === "undefined") DuAEExpression = {};
 * @namespace
 * @name Library
 * @memberof DuAEExpression
+* @category DuAEF
 */
 if (typeof DuAEExpression.Library === "undefined") DuAEExpression.Library = [];

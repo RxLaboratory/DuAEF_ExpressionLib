@@ -454,6 +454,50 @@ var v = 1-x-y + 2*x*y;
 return new FuzzyVeracity( v );
 },
 };
+function animate(ks, loopOut, loopIn, ct) {
+if (ks.length == 0) return value;
+if (ks.length == 1) return ks[0].value;
+if (typeof loopOut === 'undefined') loopOut = 'none';
+if (typeof loopIn === 'undefined') loopIn = 'none';
+if (typeof ct === 'undefined') ct = time;
+var startTime = ks[0].time;
+var endTime = ks[ks.length-1].time;
+var duration = endTime - startTime;
+if ( ct >= endTime )
+{
+if ( loopOut == 'cycle' ) ct = ((ct - startTime) % duration) + startTime;
+else if ( loopOut == 'pingpong' ) {
+var d = duration * 2;
+ct = (ct-startTime) % d;
+if (ct > duration) ct = d - ct;
+ct += startTime;
+}
+}
+else if ( ct < startTime) {
+if ( loopIn == 'cycle' ) ct = ((ct - startTime) % duration) + startTime + duration;
+else if ( loopIn == 'pingpong' ) {
+var d = duration * 2;
+ct += d;
+ct = (ct-startTime) % d;
+if (ct > duration) ct = d - ct;
+ct += startTime;
+}
+}
+for (var i = 0; i < ks.length; i++) {
+var k = ks[i];
+if (k.time > ct && i == 0) return k.value;
+if (k.time == ct) return k.value;
+if (k.time < ct) {
+if (i == ks.length - 1) return k.value;
+var nk = ks[i+1];
+if (nk.time < ct) continue;
+if (typeof k.interpolation === 'undefined') return linear(ct, k.time, nk.time, k.value, nk.value);
+if (typeof k.params === 'undefined') return k.interpolation(ct, k.time, nk.time, k.value, nk.value);
+else return k.interpolation(ct, k.time, nk.time, k.value, nk.value, k.params);
+}
+}
+return value;
+}
 function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {
 if (typeof tMin === 'undefined') tMin = 0;
 if (typeof tMax === 'undefined') tMax = 1;
@@ -537,6 +581,67 @@ i = linear(rate, -0.025, 0.7, 0.415, 1);
 o = 1-easeOut(rate, -0.025, 0.7, 0.415, 0.15);
 }
 return [i,0,o,1];
+}
+function integrateLinearKeys( prop ) {
+if (typeof prop === 'undefined') prop = thisProperty;
+var nK = prop.numKeys;
+if (nK < 2) return prop.value*(time - inPoint);
+if (prop.key(1).time > time ) return prop.value*(time - inPoint);
+var result = prop.key(1).value * (prop.key(1).time - inPoint);
+for (var i = 2; i <= nK; i++){
+if ( prop.key(i).time > time ) break;
+var k1 = prop.key(i-1);
+var k2 = prop.key(i);
+result += (k1.value + k2.value) * (k2.time - k1.time)/2;
+}
+result += (prop.value + prop.key(i-1).value) * (time - prop.key(i-1).time) / 2;
+return result;
+}
+function limit(val, min, max, softness) {
+if (typeof min === 'undefined') min = null;
+if (typeof max === 'undefined') max = null;
+if (typeof softness === 'undefined') softness = 0;
+if (min == null && max == null) return val;
+if (typeof val.length !== 'undefined') {
+var n = 0;
+if (min !== null) {
+if (typeof min.length === 'undefined') {
+min = [min];
+while(min.length < val.length) min.push(min[0]);
+}
+n = Math.max(val.length, min.length);
+}
+else if (max !== null) {
+if (typeof max.length === 'undefined') {
+max = [max];
+while(max.length < val.length) max.push(max[0]);
+}
+n = Math.max(val.length, max.length);
+}
+for (var i = 0; i < n; i++) {
+if (min !== null && max !== null) val[i] = limit(val[i], min[i], max[i], softness);
+else if (min !== null) val[i] = limit(val[i], min[i], null, softness);
+else if (max !== null) val[i] = limit(val[i], null, max[i], softness);
+}
+return val;
+}
+if (max != null) {
+if (typeof max.length !== 'undefined') max = max[0];
+max = max - softness;
+if ( val > max ) {
+if (softness == 0) return max;
+return max + softness - softness / ( 1 + (val - max)/softness);
+}
+}
+if (min != null) {
+if (typeof min.length !== 'undefined') min = min[0];
+min = min + softness;
+if (val < min && min != null) {
+if (softness == 0) return min;
+return min - softness + softness / (1 + (min - val)/softness);
+}
+}
+return val;
 }
 function linearExtrapolation( t, tMin, tMax, value1, value2 )
 {
@@ -846,6 +951,17 @@ return x < 0 ? -pow(-x, 1/3) : pow(x, 1/3);
 };
 })(Math.pow);
 }
+function distanceToLine( point, line ) {
+var b = line[0];
+var c = line [1];
+var a = point;
+var line = Math.pow( length( b, c ), 2 );
+if ( line === 0 ) return Math.pow( length( a, b ), 2 );
+var d = ( ( a[ 0 ] - b[ 0 ] ) * ( c[ 0 ] - b[ 0 ] ) + ( a[ 1 ] - b[ 1 ] ) * ( c[ 1 ] - b[ 1 ] ) ) / line;
+d = Math.max( 0, Math.min( 1, d ) );
+var distance = Math.pow( length( a, [ b[ 0 ] + d * ( c[ 0 ] - b[ 0 ] ), b[ 1 ] + d * ( c[ 1 ] - b[ 1 ] ) ] ), 2 );
+return Math.sqrt( distance );
+};
 function gaussian( value, min, max, center, fwhm)
 {
 if (typeof min === 'undefined') min = 0;
@@ -967,6 +1083,28 @@ path.inTangents = inT;
 path.outTangents = outT;
 return path;
 }
+function inside( point, points ) {
+var x = point[ 0 ],
+y = point[ 1 ];
+var result = 0;
+var inside = false;
+for ( var i = 0, j = points.length - 1; i < points.length; j = i++ ) {
+var xi = points[ i ][ 0 ],
+yi = points[ i ][ 1 ];
+var xj = points[ j ][ 0 ],
+yj = points[ j ][ 1 ];
+var intersect = ( ( yi > y ) != ( yj > y ) ) &&
+( x <
+( xj - xi ) * ( y - yi ) / ( yj - yi ) + xi );
+if ( intersect ) inside = !inside;
+var t1 = length( points[ i ], point );
+var t2 = length( points[ result ], point );
+if ( t1 < t2 ) {
+result = i;
+}
+}
+return { inside: inside, closestVertex: result };
+};
 function multPath(path, weight) {
 var vertices = multPoints(path.points, weight);
 var inT = multPoints(path.inTangents, weight);
@@ -989,13 +1127,8 @@ return path;
 }
 function checkDuikEffect(fx, duikMatchName) {
 if (fx.numProperties  < 3) return false;
-if (!!$.engineName) {
-if ( fx(2).name != duikMatchName ) return false;
-}
-else {
 try { if (fx(2).name != duikMatchName) return false; }
 catch (e) { return false; }
-}
 return true;
 }
 function checkEffect(fx, propIndex, propName) {
@@ -1470,6 +1603,20 @@ me.context.setTransform(me.a, me.b, me.c, me.d, me.e, me.f);
 return me
 }
 };
+function pointsToWorld( points, layer ) {
+for (var i = 0; i < points.length; i++) {
+points[i] = layer.toWorld(points[i]);
+}
+return points;
+}
+function shapePointsToLayer( prop ) {
+var points = prop.points();
+var matrix = getGroupTransformMatrix( prop );
+for (var i = 0; i < points.length; i++) {
+points[i] = matrix.applyToPoint( points[i] );
+}
+return points;
+}
 function translatePointWithLayer( l, point, startT, endT ) {
 try {
 var pos = l.fromWorld( point, startT );
