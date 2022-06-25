@@ -2034,7 +2034,7 @@ function isStill(t, threshold, axis) {
 	  if (axis >= 0) return Math.abs(d[axis]) <= threshold;
 	  // Check all axis
 	  for (var i = 0; i < d.length; i++) {
-		if (Math.abs(d[i]) >= threshold) return false;
+		if (Math.abs(d[i]) > threshold) return false;
 	  }
 	  return true;
 	} else return Math.abs(d) <= threshold;

@@ -1209,7 +1209,7 @@ var d = valueAtTime(t) - valueAtTime(t + thisComp.frameDuration*.1);
 if (d instanceof Array) {
 if (axis >= 0) return Math.abs(d[axis]) <= threshold;
 for (var i = 0; i < d.length; i++) {
-if (Math.abs(d[i]) >= threshold) return false;
+if (Math.abs(d[i]) > threshold) return false;
 }
 return true;
 } else return Math.abs(d) <= threshold;
