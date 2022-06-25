@@ -5,6 +5,7 @@
  * @param {Layer} l The layer to get the orientation from
  * @param {float} [t=time] The time at which to get the orientation
  * @return {float} The orientation, in degrees.
+ * @category ExpressionLibrary
  */
 function getOrientationAtTime( l, t ) {
     var r = 0;

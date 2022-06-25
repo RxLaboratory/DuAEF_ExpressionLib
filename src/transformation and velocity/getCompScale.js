@@ -5,6 +5,7 @@
  * @param {Layer} [l=thisLayer] The layer 
  * @param {number} [t=time] The time when to get the scale
  * @return {number} The scale ratio. This is not a percent, 1.0 is 100%.
+ * @category ExpressionLibrary
  */
 function getCompScale( l, t ) {
 	//get ratio 

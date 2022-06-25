@@ -7,6 +7,7 @@
  * @returns {float|float[]} The new value
  * @function
  * @requires getPrevKey
+ * @category ExpressionLibrary
  */
 function overShoot(t, elasticity, damping, vAtTime) {
 

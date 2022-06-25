@@ -6,6 +6,8 @@
  * @param {float} weight The multipliers
  * @returns {Object} A path object with three array attributes: points, inTangents, outTangents
  * @requires multPoints
+ * @category ExpressionLibrary
+ * @category ExpressionLibrary
  */
 function multPath(path, weight) {
     var vertices = multPoints(path.points, weight);

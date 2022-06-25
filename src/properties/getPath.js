@@ -2,6 +2,7 @@
  * Gets the path from the current property at a given time.
  * @function
  * @return {Object} A path object with three array attributes: points, inTangents, outTangents
+ * @category ExpressionLibrary
  */
 function getPath(t) {
     var path = {};

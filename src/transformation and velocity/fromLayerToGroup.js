@@ -6,6 +6,7 @@
  * @return {number[]} The 2D coordinates of the point in the current group.
  * @requires Matrix
  * @requires getGroupTransformMatrix
+ * @category ExpressionLibrary
  */
 function fromLayerToGroup( point ) {
     var matrix = getGroupTransformMatrix().inverse();

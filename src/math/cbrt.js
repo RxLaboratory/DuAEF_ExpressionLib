@@ -4,6 +4,7 @@
     * @name Math.cbrt
     * @param {Number} x The value
     * @return {Number} The cubic root
+    * @category ExpressionLibrary
     */
 if (typeof Math.cbrt === 'undefined') {
     Math.cbrt = (function(pow) {

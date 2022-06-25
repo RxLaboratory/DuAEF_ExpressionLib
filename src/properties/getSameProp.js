@@ -5,6 +5,7 @@
  * @return {Property} The property.
  * @requires getPropFromPath
  * @requires getPropPath
+ * @category ExpressionLibrary
  */
 function getSameProp( l )
 {

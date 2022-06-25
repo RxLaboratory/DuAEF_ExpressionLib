@@ -4,6 +4,7 @@
  * @param {Keyframe} k The key to check
  * @param {int} axis The axis to check for multi-dimensionnal properties
  * @return {boolean} true if the key is a maximum or minimum
+ * @category ExpressionLibrary
  */
 function isKeyTop(k, axis) {
 	var prevSpeed = velocityAtTime(k.time - thisComp.frameDuration/2);

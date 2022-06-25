@@ -4,6 +4,7 @@
  * @param {float} t The time before which to run the check
  * @returns {float} The last active time before t
  * @function
+ * @category ExpressionLibrary
  * @requires getPrevKey
  */
 function lastActiveTime( prop, t ) {

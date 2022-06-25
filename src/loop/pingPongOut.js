@@ -8,6 +8,7 @@
  * @returns {float} The new value
  * @function
  * @requires getPrevKey
+ * @category ExpressionLibrary
  */
  function pingPongOut(t, nK, vAtTime, damping) {
 	var currentValue = vAtTime(t);

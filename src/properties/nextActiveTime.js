@@ -5,6 +5,7 @@
  * @returns {float} The next active time after t
  * @function
  * @requires getNextKey
+ * @category ExpressionLibrary
  */
 function nextActiveTime( prop, t )
 {

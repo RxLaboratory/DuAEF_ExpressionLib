@@ -4,6 +4,7 @@
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [l=thisLayer] The layer
  * @return {number[]} The world position
+ * @category ExpressionLibrary
  */
 function getLayerWorldPos(t, l) {
 	if (typeof t === 'undefined') t = time;

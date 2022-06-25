@@ -3,6 +3,7 @@
  * @function
  * @param {Layer} l The layer to get the scale from
  * @return {float[]} The scale, in percent.
+ * @category ExpressionLibrary
  */
 function getScale( l ) {
     var s = l.scale.value;

@@ -9,6 +9,7 @@
  * @param {Property} fx The effect to check
  * @param {string} duikMatchName The matchName of a pseudo-effect used by Duik (without the 'Pseudo/' part)
  * @return {boolean} True when the property at propIndex is named propName
+ * @category ExpressionLibrary
  */
 function checkDuikEffect(fx, duikMatchName) {
     if (fx.numProperties  < 3) return false;

@@ -11,6 +11,7 @@
  * @example
  * seedRandom(index, false);
  * addNoise(value, 33 ); // the noise will change at each frame, varying between (value * .66) and (value * 1.33)
+ * @category ExpressionLibrary
  */
 function addNoise( val, quantity ) {
   // a true random value to make sure all properties have a differente noise

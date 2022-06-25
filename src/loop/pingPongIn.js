@@ -7,6 +7,7 @@
  * @returns {float} The new value
  * @function
  * @requires getNextKey
+ * @category ExpressionLibrary
  */
  function pingPongIn(t, nK, vAtTime, damping) {
 	var currentValue = vAtTime(t);

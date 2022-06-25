@@ -2,6 +2,7 @@
  * Gets an array of all indices needed to get the current property from the layer level.
  * @function
  * @return {int[]} All indices to the property.
+ * @category ExpressionLibrary
  */
 function getPropPath()
 {

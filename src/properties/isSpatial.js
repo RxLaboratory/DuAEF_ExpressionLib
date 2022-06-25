@@ -3,6 +3,7 @@
  * @function
  * @param {Property} [prop=thisProperty] The property to check
  * @return {boolean} true if the property is spatial.
+ * @category ExpressionLibrary
  */
 function isSpatial(prop) {
 	if (typeof prop === 'undefined') prop = thisProperty;

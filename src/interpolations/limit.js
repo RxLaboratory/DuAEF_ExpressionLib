@@ -1,9 +1,11 @@
 /**
  * Clamps a value, but with a smooth interpolation according to a softness parameter
+ * @function
  * @param {number|number[]} value The value to limit
  * @param {number|number[]|null} [min] The minimum value
  * @param {number|number[]|null} [max] The maximum value
  * @param {number} [softness=0] The softness, a value corresponding value, from which the interpolation begins to slow down
+ * @category ExpressionLibrary
  */
 function limit(val, min, max, softness) {
     if (typeof min === 'undefined') min = null;

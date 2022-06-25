@@ -6,6 +6,7 @@
  * @param {Layer} [l=thisLayer] The layer
  * @return {number[]} The velocity.
  * @requires getLayerWorldPos
+ * @category ExpressionLibrary
  */
 function getLayerWorldVelocity(t, l) {
 	return (getLayerWorldPos(t, l) - getLayerWorldPos(t - 0.01, l)) * 100;

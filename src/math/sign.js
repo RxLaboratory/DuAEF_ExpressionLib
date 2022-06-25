@@ -4,5 +4,6 @@
     * @name Math.sign
     * @param {Number} x The value
     * @return {Number} The sign, 1, -1 or 0.
+    * @category ExpressionLibrary
     */
 if (typeof Math.sign === 'undefined') Math.sign = function(x) { return ((x > 0) - (x < 0)) || +x; };

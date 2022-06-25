@@ -4,6 +4,7 @@
  * @param {float[][]} p The list of points
  * @param {float} w The multiplier
  * @returns {float[][]} The multiplied points
+ * @category ExpressionLibrary
  */
 function multPoints(p, w) {
     var r = [];

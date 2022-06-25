@@ -3,6 +3,7 @@
     * @function
     * @param {Number[]} values The values
     * @return {Number} The mean
+    * @category ExpressionLibrary
     */
 function mean( values )
 {

@@ -10,6 +10,7 @@
  * @param {number} [value2=1] The maximum value of the interpolated result
  * @param {number} [rate=0] The raising speed in the range [-1.0, 1.0].
  * @return {number} the value.
+ * @category ExpressionLibrary
  */
 function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )
 {

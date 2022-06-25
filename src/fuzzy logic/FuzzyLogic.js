@@ -10,6 +10,7 @@
   * @requires inverseLogistic
   * @requires logistic
   * @requires mean
+  * @category ExpressionLibrary
 */
 
 function FuzzySet( name, valueNot, valueIS, shape, shapeAbove, plateauMin, plateauMax)

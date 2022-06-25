@@ -4,6 +4,7 @@
  * @param {float[]} weights The weights to normalize
  * @param {float} [sum] The sum of the weights; provide it if it's already computed to improve performance.
  * @returns {float[]} The normalized weights
+ * @category ExpressionLibrary
  */
 function normalizeWeights(weights, sum) {
     if(typeof sum === 'undefined') {

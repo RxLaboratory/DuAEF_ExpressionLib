@@ -7,6 +7,7 @@
  * @param {number} [t=time] Time from when to get the position
  * @return {number[]} The world position
  * @requires getLayerWorldPos
+ * @category ExpressionLibrary
  */
 function getLayerDistance(other, origin, t) {
     if (typeof origin === 'undefined') origin = thisLayer;

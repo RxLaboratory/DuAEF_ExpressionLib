@@ -3,6 +3,7 @@
  * Note that for path properties, this method returns a path object with three array attributes: points, inTangents, outTangents.
  * @function
  * @return {any} The zero value.
+ * @category ExpressionLibrary
  */
 function zero() {
     // Single value

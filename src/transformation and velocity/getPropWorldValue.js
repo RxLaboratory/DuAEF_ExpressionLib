@@ -6,6 +6,7 @@
  * @return {number[]} The world coordinates
  * @requires getLayerWorldPos
  * @requires isPosition
+ * @category ExpressionLibrary
  */
 function getPropWorldValue(t, prop) {
 	if (typeof t === 'undefined') t = time;

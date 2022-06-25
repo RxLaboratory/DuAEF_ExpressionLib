@@ -6,6 +6,7 @@
  * @return {Matrix} The 2D Transform Matrix.
  * @requires isLayer
  * @requires Matrix
+ * @category ExpressionLibrary
  */
 function getGroupTransformMatrix( prop ) {
     // A Matrix to apply group transforms

@@ -5,6 +5,7 @@
  * @returns {float|float[]} The new value
  * @function
  * @requires getNextKey
+ * @category ExpressionLibrary
  */
  function continueIn(t, damping) {
 	if (numKeys <= 1) return value;

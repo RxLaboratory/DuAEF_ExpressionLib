@@ -4,6 +4,7 @@
  * @param {number} [t=time] Time at which to get the key
  * @param {Property} [prop=thisProperty] The property from which to get the key
  * @return {Key|null} The key, or null if there's no key before.
+ * @category ExpressionLibrary
  */
 function getPrevKey(t, prop) {
     if (typeof t === 'undefined') t = time;

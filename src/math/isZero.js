@@ -1,9 +1,9 @@
 /**
     * Checks if the value is 0; works with arrays.
     * @function
-    * @name isZero
     * @param {Number|Number[]} x The value(s)
     * @return {Boolean} true if all values are 0.
+    * @category ExpressionLibrary
     */
  function isZero(a)
  {

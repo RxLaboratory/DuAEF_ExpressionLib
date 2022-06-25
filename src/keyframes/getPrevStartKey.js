@@ -6,6 +6,7 @@
  * @return {Key|null} The key, or null if there's no key before.
  * @requires isStill
  * @requires getPrevKey
+ * @category ExpressionLibrary
  */
 function getPrevStartKey(t, prop) {
     if (typeof t === 'undefined') t = time;
