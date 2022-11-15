@@ -1435,6 +1435,12 @@ s = [ s[0]*ps[0], s[1]*ps[1] ];
 }
 return s;
 }
+function isLayerFlipped( l ) {
+if (typeof l === "undefined") l = thisLayer;
+var signX = Math.sign( l.scale.value[0] );
+var signY = Math.sign( l.scale.value[1] );
+return signX != signY;
+}
 function Matrix() {
 /*!
 2D Transformation Matrix v2.7.5 LT
