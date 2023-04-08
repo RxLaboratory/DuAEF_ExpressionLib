@@ -628,7 +628,7 @@ else h = interpolationMethod(t, limit, tMax, 0, hB);
 }
 result = [h, r[1], r[2], r[3]];
 }
-result = hslToRgb(r);
+result = hslToRgb(result);
 }
 else result = interpolationMethod(time, tMin, tMax, a, b);
 return result;

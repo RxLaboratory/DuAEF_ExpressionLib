@@ -898,7 +898,7 @@ function interpolateColor(t, mode, tMin, tMax, colorA, colorB, interpolationMeth
             }
             result = [h, r[1], r[2], r[3]];
         }
-        result = hslToRgb(r);
+        result = hslToRgb(result);
     }
     else result = interpolationMethod(time, tMin, tMax, a, b);
     
