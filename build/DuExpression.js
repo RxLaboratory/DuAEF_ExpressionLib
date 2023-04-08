@@ -597,6 +597,42 @@ result += (k1.value + k2.value) * (k2.time - k1.time)/2;
 result += (prop.value + prop.key(i-1).value) * (time - prop.key(i-1).time) / 2;
 return result;
 }
+function interpolateColor(t, mode, tMin, tMax, colorA, colorB, interpolationMethod) {
+if (typeof t === 'undefined') t = time;
+if (typeof mode === 'undefined') mode = 'smartHSL';
+if (typeof tMin === 'undefined') tMin = 0;
+if (typeof tMax === 'undefined') tMax = 1;
+if (typeof colorA === 'undefined') colorA = [0,0,0,0];
+if (typeof colorB === 'undefined') colorB = [1,1,1,1];
+if (typeof interpolationMethod === 'undefined') interpolationMethod = ease;
+var result = [0,0,0,0];
+if (mode == 2 || mode == 1) {
+var a = rgbToHsl(colorA);
+var b = rgbToHsl(colorB);
+var dist = Math.abs( a[0] - b[0] );
+result = interpolationMethod(t, tMin, tMax, a, b);
+if (dist > 0.5 && mode == 'smartHSL') {
+var hA = a[0];
+var hB = b[0];
+var h = hA;
+dist = 1-dist;
+if (hA < hB) {
+var limit = hA / dist * tMax;
+if (t < limit) h = interpolationMethod(t, tMin, limit, hA, 0);
+else h = interpolationMethod(t, limit, tMax, 1, hB);
+}
+else {
+var limit = (1-hA) / dist * tMax;
+if (t < limit) h = interpolationMethod(t, tMin, limit, hA, 1);
+else h = interpolationMethod(t, limit, tMax, 0, hB);
+}
+result = [h, r[1], r[2], r[3]];
+}
+result = hslToRgb(r);
+}
+else result = interpolationMethod(time, tMin, tMax, a, b);
+return result;
+}
 function limit(val, min, max, softness) {
 if (typeof min === 'undefined') min = null;
 if (typeof max === 'undefined') max = null;
@@ -1036,6 +1072,17 @@ function multPoints(p, w) {
 var r = [];
 for (var i = 0, n = p.length; i < n; i++) {
 r.push(p[i] * w);
+}
+return r;
+}
+function multSets(setA, setB) {
+var r = [];
+var countA = setA.length;
+var countB = setB.length;
+var count = countA;
+if (countB < countA) count = countB;
+for (var i = 0; i < count; i++) {
+r.push(setA[i] * setB[i]);
 }
 return r;
 }
