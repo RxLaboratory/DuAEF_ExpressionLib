@@ -606,7 +606,7 @@ if (typeof colorA === 'undefined') colorA = [0, 0, 0, 0];
 if (typeof colorB === 'undefined') colorB = [1, 1, 1, 1];
 if (typeof interpolationMethod === 'undefined') interpolationMethod = ease;
 var result = [0, 0, 0, 0];
-if (colorspace > 0) {
+if (colorspace > 0 && colorspace < 4) {
 var a = rgbToHsl(colorA);
 var b = rgbToHsl(colorB);
 var dist = Math.abs(a[0] - b[0]);
@@ -628,7 +628,19 @@ else h = interpolationMethod(t, limit, tMax, 0, hB);
 result = [h, result[1], result[2], result[3]];
 }
 result = hslToRgb(result);
-} else result = interpolationMethod(t, tMin, tMax, colorA, colorB);
+}
+else {
+var rgbResult = interpolationMethod(t, tMin, tMax, colorA, colorB);
+if (colorspace == 0) result = rgbResult;
+else {
+var a = rgbToHsl(colorA);
+var b = rgbToHsl(colorB);
+var hslResult = interpolationMethod(t, tMin, tMax, a, b);
+var h = rgbToHsl(rgbResult)[0];
+result = [h, hslResult[1], hslResult[2], hslResult[3]];
+result = hslToRgb(result);
+}
+}
 return result;
 }
 function limit(val, min, max, softness) {
