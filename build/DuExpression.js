@@ -606,12 +606,12 @@ if (typeof colorA === 'undefined') colorA = [0, 0, 0, 0];
 if (typeof colorB === 'undefined') colorB = [1, 1, 1, 1];
 if (typeof interpolationMethod === 'undefined') interpolationMethod = ease;
 var result = [0, 0, 0, 0];
-if (colorspace == 2 || colorspace == 1) {
+if (colorspace > 0) {
 var a = rgbToHsl(colorA);
 var b = rgbToHsl(colorB);
 var dist = Math.abs(a[0] - b[0]);
 result = interpolationMethod(t, tMin, tMax, a, b);
-if (dist > 0.5 && colorspace == 2) {
+if ((dist > 0.5 && colorspace == 2) || (dist < 0.5 && colorspace == 3)) {
 var hA = a[0];
 var hB = b[0];
 var h = hA;
