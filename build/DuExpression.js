@@ -1,3 +1,41 @@
+function blendColor(colorA, colorB, alpha, blendingMode) {
+if (typeof alpha === 'undefined') alpha = colorB[3];
+if (typeof blendingMode === 'undefined') blendingMode = 0;
+if (alpha == 0) return colorA;
+if (alpha == 1 && blendingMode == 0) return colorB;
+if (blendingMode == 0 || blendingMode == 1 || blendingMode == 3) {
+var r = blendColorValue(colorA[0], colorB[0], alpha, blendingMode);
+var g = blendColorValue(colorA[1], colorB[1], alpha, blendingMode);
+var b = blendColorValue(colorA[2], colorB[2], alpha, blendingMode);
+var a = blendColorValue(colorA[3], colorB[3], alpha, 0);
+return [r,g,b,a];
+}
+var lA = colorA[0] + colorA[1] + colorA[2];
+var lB = colorB[0] + colorB[1] + colorB[2];
+if (blendingMode == 2) {
+if (lA >= lB) return colorA;
+return blendColor( colorA, colorB, alpha, 0);
+}
+if (blendingMode == 4) {
+if (lA <= lB) return colorA;
+return blendColor( colorA, colorB, alpha, 0);
+}
+}
+function blendColorValue(colorA, colorB, alpha, blendingMode) {
+if (typeof alpha === 'undefined') alpha = 1;
+if (typeof blendingMode === 'undefined') blendingMode = 0;
+if (alpha == 0) return colorA;
+if (blendingMode == 0) {
+if (alpha == 1) return colorB;
+return (1-alpha)*colorA + alpha*colorB;
+}
+if (blendingMode == 1) {
+return colorA + colorB*alpha;
+}
+if (blendingMode == 3) {
+return blendColorValue( colorA, colorA * colorB, alpha, 0 );
+}
+}
 function FuzzySet( name, valueNot, valueIS, shape, shapeAbove, plateauMin, plateauMax)
 {
 var min;
