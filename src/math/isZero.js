@@ -7,7 +7,7 @@
     */
  function isZero(a)
  {
-    if (a.length)
+    if (a instanceof Array)
     {
         for ( var i = 0; i < a.length; i++ )
         {

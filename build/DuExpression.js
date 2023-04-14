@@ -1086,7 +1086,7 @@ return midValue - Math.log( (max-min)/(v-min) - 1) / rate;
 }
 function isZero(a)
 {
-if (a.length)
+if (a instanceof Array)
 {
 for ( var i = 0; i < a.length; i++ )
 {
