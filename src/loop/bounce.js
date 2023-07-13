@@ -82,8 +82,8 @@ function bounce(t, elasticity, damping, vAtTime) {
       var startValue = valueAtTime(bounceStart);
       if (value instanceof Array) {
           for (var i = 0; i < prevValue.length; i++) {
-              if (prevValue[i] > startValue[i]) bounceValue[i] = Math.abs(fThrough[i]);
-              if (prevValue[i] < startValue[i]) bounceValue[i] = -Math.abs(fThrough[i]);
+              if (prevValue[i] > startValue[i]) bounceValue[i] = Math.abs(bounceValue[i]);
+              if (prevValue[i] < startValue[i]) bounceValue[i] = -Math.abs(bounceValue[i]);
           }
       } else {
           if (prevValue > startValue) bounceValue = Math.abs(bounceValue);
