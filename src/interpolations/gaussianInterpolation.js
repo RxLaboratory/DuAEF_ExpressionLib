@@ -20,6 +20,11 @@ function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )
     if (typeof value2 === 'undefined') value2 = 0;
     if (typeof rate === 'undefined') rate = 0;
 
+    // Trivial cases
+    if (value1 == value2) return value1;
+    if (t >= tMax) return value2;
+    if (t <= tMin) return value1;
+
     // fix small bump at first value
     if (t != tMin)
     {
