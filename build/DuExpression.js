@@ -586,6 +586,9 @@ if (typeof tMax === 'undefined') tMax = 1;
 if (typeof value1 === 'undefined') value1 = 0;
 if (typeof value2 === 'undefined') value2 = 0;
 if (typeof rate === 'undefined') rate = 0;
+if (value1 == value2) return value1;
+if (t >= tMax) return value2;
+if (t <= tMin) return value1;
 if (t != tMin)
 {
 var newValue1 = gaussianInterpolation( tMin, tMin, tMax, value1, value2, rate );
@@ -1150,6 +1153,24 @@ normalized.push(w + (w / sum) * o);
 }
 return normalized;
 }
+function randomUnitVector( dimensions ) {
+var angle = random(0, 2*Math.PI);
+if (dimensions == 2) {
+return [Math.cos(angle), Math.sin(angle)];
+}
+else if (dimensions == 3) {
+var z = random(-1, 1);
+var f = Math.sqrt(1-z*z);
+return [
+f*Math.cos(angle),
+f*Math.sin(angle),
+z
+];
+}
+else {
+return null;
+}
+}
 if (typeof Math.sign === 'undefined') Math.sign = function(x) { return ((x > 0) - (x < 0)) || +x; };
 function subPoints(p1, p2, w) {
 var n = p1.length;
@@ -1167,6 +1188,14 @@ continue;
 r.push(p1[i] - p2[i] * w);
 }
 return r;
+}
+function unitVector(dimensions, axis) {
+var vec = new Array(dimensions)
+for (var i = 0; i < dimensions; i++) {
+if (i == axis) vec[i] = 1;
+else vec[i] = 0;
+}
+return vec;
 }
 function addPath(path1, path2, path2weight) {
 var vertices = addPoints(path1.points, path2.points, path2weight);

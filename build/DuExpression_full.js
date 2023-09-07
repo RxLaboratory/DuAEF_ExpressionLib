@@ -857,6 +857,11 @@ function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )
     if (typeof value2 === 'undefined') value2 = 0;
     if (typeof rate === 'undefined') rate = 0;
 
+    // Trivial cases
+    if (value1 == value2) return value1;
+    if (t >= tMax) return value2;
+    if (t <= tMin) return value1;
+
     // fix small bump at first value
     if (t != tMin)
     {
@@ -1907,6 +1912,34 @@ function normalizeWeights(weights, sum) {
 }
 
 /**
+ * Generates a unit vector in 2 or 3 dimensions
+ * @function
+ * @param {Number} dimensions The number of dimensions, either 2 or 3
+ * @returns {Number[]} The vector
+ * @category ExpressionLibrary
+ */
+function randomUnitVector( dimensions ) {
+    var angle = random(0, 2*Math.PI);
+    if (dimensions == 2) {
+        return [Math.cos(angle), Math.sin(angle)];
+    }
+    else if (dimensions == 3) {
+        var z = random(-1, 1);
+        var f = Math.sqrt(1-z*z);
+        return [
+            f*Math.cos(angle),
+            f*Math.sin(angle),
+            z
+        ];
+    }
+    else {
+        // NOT IMPLEMENTED
+        return null;
+    }
+}
+
+
+/**
     * Fix for the ExtendScript engine, implements the Math.sign function.
     * @function
     * @name Math.sign
@@ -1941,6 +1974,23 @@ function subPoints(p1, p2, w) {
         r.push(p1[i] - p2[i] * w);
     }
     return r;
+}
+
+/**
+ * Creates a unit vector along a given axis
+ * @function
+ * @param {Number} dimensions 
+ * @param {Number} axis 
+ * @returns {Number[]}
+ * @category ExpressionLibrary
+ */
+function unitVector(dimensions, axis) {
+    var vec = new Array(dimensions)
+    for (var i = 0; i < dimensions; i++) {
+        if (i == axis) vec[i] = 1;
+        else vec[i] = 0;
+    }
+    return vec;
 }
 
 /**
