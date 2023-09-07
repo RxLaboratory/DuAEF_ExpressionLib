@@ -1031,6 +1031,51 @@ r.push(p1[i] + p2[i] * w);
 }
 return r;
 }
+function alea(seed) {
+function Mash() {
+var n = 0xefc8249d;
+var mash = function (data) {
+data = String(data);
+for (var i = 0; i < data.length; i++) {
+n += data.charCodeAt(i);
+var h = 0.02519603282416938 * n;
+n = h >>> 0;
+h -= n;
+h *= n;
+n = h >>> 0;
+h -= n;
+n += h * 0x100000000;
+}
+return (n >>> 0) * 2.3283064365386963e-10;
+};
+return mash;
+}
+function Alea(seed) {
+var me = this, mash = Mash();
+me.next = function (minVal, maxVal) {
+if (typeof minVal === 'undefined') minVal = 0;
+if (typeof maxVal === 'undefined') maxVal = 1;
+var t = 2091639 * me.s0 + me.c * 2.3283064365386963e-10;
+me.s0 = me.s1;
+me.s1 = me.s2;
+var r = me.s2 = t - (me.c = t | 0);
+return r * (maxVal - minVal) + minVal;
+};
+me.c = 1;
+me.s0 = mash(' ');
+me.s1 = mash(' ');
+me.s2 = mash(' ');
+me.s0 -= mash(seed);
+if (me.s0 < 0) { me.s0 += 1; }
+me.s1 -= mash(seed);
+if (me.s1 < 0) { me.s1 += 1; }
+me.s2 -= mash(seed);
+if (me.s2 < 0) { me.s2 += 1; }
+mash = null;
+}
+var xg = new Alea(seed);
+return xg.next;
+}
 if (typeof Math.cbrt === 'undefined') {
 Math.cbrt = (function(pow) {
 return function cbrt(x){
@@ -1153,13 +1198,14 @@ normalized.push(w + (w / sum) * o);
 }
 return normalized;
 }
-function randomUnitVector( dimensions ) {
-var angle = random(0, 2*Math.PI);
+function randomUnitVector( dimensions, rng ) {
+if (typeof rng === 'undefined') rng = random;
+var angle = rng(0, 2*Math.PI);
 if (dimensions == 2) {
 return [Math.cos(angle), Math.sin(angle)];
 }
 else if (dimensions == 3) {
-var z = random(-1, 1);
+var z = rng(-1, 1);
 var f = Math.sqrt(1-z*z);
 return [
 f*Math.cos(angle),
