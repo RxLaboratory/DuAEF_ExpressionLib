@@ -1364,6 +1364,12 @@ return false;
 function isPosition(prop) {
 return  prop === position;
 }
+function isShapeLayer( lay ) {
+if (typeof(lay) === 'undefined')
+lay = thisLayer;
+try { if (lay("ADBE Root Vectors Group")) return true; }
+catch (e) { return false; }
+}
 function isSpatial(prop) {
 if (typeof prop === 'undefined') prop = thisProperty;
 if (!(prop.value instanceof Array)) return false;
